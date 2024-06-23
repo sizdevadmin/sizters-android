@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "576481110625",
+    "project_id": "sizterhood-60d26",
+    "storage_bucket": "sizterhood-60d26.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576481110625:android:c6970d0a62d8ccd6d79820",
+        "android_client_info": {
+          "package_name": "com.siz.siz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4vJPuPC_A6d9VXpoysO9AgoVBz8gfo4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
