@@ -29,6 +29,7 @@ class ChatNav extends StatefulWidget {
 }
 
 class _ChatNavState extends State<ChatNav> {
+  late BuildContext loadingDialog;
   // snackbar ==================================================================================================
 
   mysnackbar(String message, BuildContext context) {
@@ -43,13 +44,14 @@ class _ChatNavState extends State<ChatNav> {
 
   // simple dialog =============================================================================================
 
-  dialodShow(BuildContext context) {
+  dialodShow() {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         showDialog(
             barrierDismissible: false,
             context: context,
             builder: (context) {
+              loadingDialog = context;
               return const Center(
                 child: CircularProgressIndicator(
                   color: MyColors.themecolor,
@@ -90,7 +92,7 @@ class _ChatNavState extends State<ChatNav> {
     } else if (chatController.loginStatus == "null") {
     } else if (chatController.loginStatus == "1") {
     } else if (chatController.loginStatus == "2") {
-     } else {
+    } else {
       chatController.onConnectPressed();
       chatController.getChatListOutside(1, "");
     }
@@ -181,42 +183,92 @@ class _ChatNavState extends State<ChatNav> {
                               ),
                             ),
                           ),
+                          InkWell(
+                            onTap: () async {
+                              final BottomNavController controller =
+                                  Get.put(BottomNavController());
 
-                                                          InkWell(
-              
+                              dialodShow();
 
-              splashFactory: NoSplash.splashFactory,
-              highlightColor: Colors.transparent,
-                
-                onTap: () async {
-                  SharedPreferences sharedPreferences =
-                      await SharedPreferences.getInstance();
+                              if (await controller.getHomeData(context, "")) {
+                                Navigator.pop(loadingDialog);
 
-                  sharedPreferences.setString(SizValue.underReview, "null");
-                  sharedPreferences.setString(SizValue.isLogged, "null");
+                                checkValues();
 
-                  ChatController chatController = Get.put(ChatController());
-                  chatController.getProfleValue();
-                  profileController pController = Get.put(profileController());
-                  pController.getProfleValue();
+                                profileController proController =
+                                    Get.put(profileController());
 
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LoginPage(otpNumber: "")));
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(top: 60, bottom: 10),
-                  child: Text(
-                    "Use another account ?".toUpperCase(),
-                    style: GoogleFonts.lexendDeca(
-                        decoration: TextDecoration.underline,
-                        fontSize: 16,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w300),
-                  ),
-                ),
-),
+                                proController.getProfleValue();
+                              }
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(
+                                  top: 20, left: 20, right: 20),
+                              alignment: Alignment.center,
+                              height: 40,
+                              decoration: const BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5))),
+                              child: Text(
+                                "refresh".toUpperCase(),
+                                style: GoogleFonts.lexendExa(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w300),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                           
+                            Text(
+                                "Try refreshing",
+                                style: GoogleFonts.lexendDeca(
+                                  fontStyle: FontStyle.italic,
+                                     fontSize: 16,
+                                    color: Colors.grey,
+                                    
+                                    fontWeight: FontWeight.w300),
+                              ),
+
+
+                          Container(
+                            margin: const EdgeInsets.only(top: 60, bottom: 10),
+                            child: InkWell(
+                              onTap: () async {
+                                SharedPreferences sharedPreferences =
+                                    await SharedPreferences.getInstance();
+
+                                sharedPreferences.setString(
+                                    SizValue.underReview, "null");
+                                sharedPreferences.setString(
+                                    SizValue.isLogged, "null");
+
+                                ChatController chatController =
+                                    Get.put(ChatController());
+                                chatController.getProfleValue();
+                                profileController pController =
+                                    Get.put(profileController());
+                                pController.getProfleValue();
+
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            LoginPage(otpNumber: "")));
+                              },
+                              child: Text(
+                                "Use another account ?".toUpperCase(),
+                                style: GoogleFonts.lexendDeca(
+                                    decoration: TextDecoration.underline,
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w300),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     )
@@ -341,40 +393,44 @@ class _ChatNavState extends State<ChatNav> {
                                     ),
                                   ),
                                   InkWell(
-              
+                                    splashFactory: NoSplash.splashFactory,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      SharedPreferences sharedPreferences =
+                                          await SharedPreferences.getInstance();
 
-              splashFactory: NoSplash.splashFactory,
-              highlightColor: Colors.transparent,
-                
-                onTap: () async {
-                  SharedPreferences sharedPreferences =
-                      await SharedPreferences.getInstance();
+                                      sharedPreferences.setString(
+                                          SizValue.underReview, "null");
+                                      sharedPreferences.setString(
+                                          SizValue.isLogged, "null");
 
-                  sharedPreferences.setString(SizValue.underReview, "null");
-                  sharedPreferences.setString(SizValue.isLogged, "null");
+                                      ChatController chatController =
+                                          Get.put(ChatController());
+                                      chatController.getProfleValue();
+                                      profileController pController =
+                                          Get.put(profileController());
+                                      pController.getProfleValue();
 
-                  ChatController chatController = Get.put(ChatController());
-                  chatController.getProfleValue();
-                  profileController pController = Get.put(profileController());
-                  pController.getProfleValue();
-
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LoginPage(otpNumber: "")));
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(top: 60, bottom: 10),
-                  child: Text(
-                    "Use another account ?".toUpperCase(),
-                    style: GoogleFonts.lexendDeca(
-                        decoration: TextDecoration.underline,
-                        fontSize: 16,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w300),
-                  ),
-                ),
-),
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginPage(otpNumber: "")));
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                          top: 60, bottom: 10),
+                                      child: Text(
+                                        "Use another account ?".toUpperCase(),
+                                        style: GoogleFonts.lexendDeca(
+                                            decoration:
+                                                TextDecoration.underline,
+                                            fontSize: 16,
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             )
@@ -438,42 +494,48 @@ class _ChatNavState extends State<ChatNav> {
                                           ),
                                         ),
                                       ),
+                                      InkWell(
+                                        splashFactory: NoSplash.splashFactory,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          SharedPreferences sharedPreferences =
+                                              await SharedPreferences
+                                                  .getInstance();
 
-                                                                      InkWell(
-              
+                                          sharedPreferences.setString(
+                                              SizValue.underReview, "null");
+                                          sharedPreferences.setString(
+                                              SizValue.isLogged, "null");
 
-              splashFactory: NoSplash.splashFactory,
-              highlightColor: Colors.transparent,
-                
-                onTap: () async {
-                  SharedPreferences sharedPreferences =
-                      await SharedPreferences.getInstance();
+                                          ChatController chatController =
+                                              Get.put(ChatController());
+                                          chatController.getProfleValue();
+                                          profileController pController =
+                                              Get.put(profileController());
+                                          pController.getProfleValue();
 
-                  sharedPreferences.setString(SizValue.underReview, "null");
-                  sharedPreferences.setString(SizValue.isLogged, "null");
-
-                  ChatController chatController = Get.put(ChatController());
-                  chatController.getProfleValue();
-                  profileController pController = Get.put(profileController());
-                  pController.getProfleValue();
-
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LoginPage(otpNumber: "")));
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(top: 60, bottom: 10),
-                  child: Text(
-                    "Use another account ?".toUpperCase(),
-                    style: GoogleFonts.lexendDeca(
-                        decoration: TextDecoration.underline,
-                        fontSize: 16,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w300),
-                  ),
-                ),
-),
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      LoginPage(
+                                                          otpNumber: "")));
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                              top: 60, bottom: 10),
+                                          child: Text(
+                                            "Use another account ?"
+                                                .toUpperCase(),
+                                            style: GoogleFonts.lexendDeca(
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                fontSize: 16,
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.w300),
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 )
@@ -537,42 +599,51 @@ class _ChatNavState extends State<ChatNav> {
                                               ),
                                             ),
                                           ),
+                                          InkWell(
+                                            splashFactory:
+                                                NoSplash.splashFactory,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () async {
+                                              SharedPreferences
+                                                  sharedPreferences =
+                                                  await SharedPreferences
+                                                      .getInstance();
 
-                                                                          InkWell(
-              
+                                              sharedPreferences.setString(
+                                                  SizValue.underReview, "null");
+                                              sharedPreferences.setString(
+                                                  SizValue.isLogged, "null");
 
-              splashFactory: NoSplash.splashFactory,
-              highlightColor: Colors.transparent,
-                
-                onTap: () async {
-                  SharedPreferences sharedPreferences =
-                      await SharedPreferences.getInstance();
+                                              ChatController chatController =
+                                                  Get.put(ChatController());
+                                              chatController.getProfleValue();
+                                              profileController pController =
+                                                  Get.put(profileController());
+                                              pController.getProfleValue();
 
-                  sharedPreferences.setString(SizValue.underReview, "null");
-                  sharedPreferences.setString(SizValue.isLogged, "null");
-
-                  ChatController chatController = Get.put(ChatController());
-                  chatController.getProfleValue();
-                  profileController pController = Get.put(profileController());
-                  pController.getProfleValue();
-
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LoginPage(otpNumber: "")));
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(top: 60, bottom: 10),
-                  child: Text(
-                    "Use another account ?".toUpperCase(),
-                    style: GoogleFonts.lexendDeca(
-                        decoration: TextDecoration.underline,
-                        fontSize: 16,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w300),
-                  ),
-                ),
-),
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          LoginPage(
+                                                              otpNumber: "")));
+                                            },
+                                            child: Container(
+                                              margin: const EdgeInsets.only(
+                                                  top: 60, bottom: 10),
+                                              child: Text(
+                                                "Use another account ?"
+                                                    .toUpperCase(),
+                                                style: GoogleFonts.lexendDeca(
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                    fontSize: 16,
+                                                    color: Colors.grey,
+                                                    fontWeight:
+                                                        FontWeight.w300),
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     )

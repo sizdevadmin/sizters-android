@@ -528,7 +528,7 @@ class _ManageAddressState extends State<ManageAddress> {
                                   // expandedBorder: Border.all(color: Colors.black),
                                   headerBuilder: (context, selectedItem) {
                                     return Container(
-                                       margin: const EdgeInsets.symmetric(vertical: 10),
+                                       margin: const EdgeInsets.symmetric(vertical: 20),
                                       child: Text(
                                         selectedItem,
                                         style:    GoogleFonts.lexendDeca(
@@ -551,7 +551,7 @@ class _ManageAddressState extends State<ManageAddress> {
                                
                                   hintBuilder: (context, hint) {
                                     return Container(
-                                      margin: const EdgeInsets.symmetric(vertical: 10),
+                                      margin: const EdgeInsets.symmetric(vertical: 20),
                                       child: Text(
                                         hint,
                                         style: GoogleFonts.lexendExa(

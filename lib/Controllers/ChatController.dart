@@ -33,9 +33,10 @@ class ChatController extends GetxController{
 
   
 
-  getProfleValue() async {
+   getProfleValue() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
+    
+    
     review=sharedPreferences.getString(SizValue.underReview).toString();
     loginStatus=sharedPreferences.getString(SizValue.isLogged).toString();
     reviewMSG=sharedPreferences.getString(SizValue.underReviewMsg).toString();
@@ -445,24 +446,16 @@ class ChatController extends GetxController{
     }
   }
 
-  void log(String text) {
+   void log(String text) {
     print("LOG: $text");
   }
-
-
-
-
-
-
-
-
-
 
 
   forseUpdate()
   {
     update();
   }
+  
 
 
 

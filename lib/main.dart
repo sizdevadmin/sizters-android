@@ -9,14 +9,18 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:siz/Pages/ProductView.dart';
-import 'package:siz/testing.dart';
 import 'LoginSignUp/Splash.dart';
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp();
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   runApp(const MyAppLogin());
+  
 }
 
 class MyAppLogin extends StatefulWidget {
@@ -30,7 +34,6 @@ class _MyAppLoginState extends State<MyAppLogin> {
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
 
-  
   @override
   void initState() {
     super.initState();
@@ -75,6 +78,11 @@ class _MyAppLoginState extends State<MyAppLogin> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        builder: (context, child) {
+          return MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 0.9),
+              child: child as Widget);
+        },
         navigatorKey: _navigatorKey,
         color: Colors.black,
         theme: ThemeData(
@@ -83,7 +91,7 @@ class _MyAppLoginState extends State<MyAppLogin> {
           splashFactory: NoSplash.splashFactory,
           splashColor: Colors.transparent,
           primarySwatch: const MaterialColor(0xFFAF1010, {
-            50:  Color(0xFFAF1010),
+            50: Color(0xFFAF1010),
             100: Color(0xFFAF1010),
             200: Color(0xFFAF1010),
             300: Color(0xFFAF1010),
@@ -96,9 +104,7 @@ class _MyAppLoginState extends State<MyAppLogin> {
           }),
         ),
         debugShowCheckedModeBanner: false,
-        routes: {"/": (context) =>  Splash()}
-        
-        );
+        routes: {"/": (context) => Splash()});
   }
 }
 

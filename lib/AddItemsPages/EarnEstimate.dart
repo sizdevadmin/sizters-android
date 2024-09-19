@@ -411,10 +411,10 @@ class _EarnEstimateState extends State<EarnEstimate> {
                             onChanged: (value) {
                               if (value.isNotEmpty) {
                                 setState(() {
-                                  earning3Days = ((percentageEarn / 100 - 1) *
+                                  earning3Days = ((percentageEarn / 100 ) *
                                           int.parse(rental3daysController.text))
-                                      .toStringAsFixed(2)
-                                      .replaceAll("-", "");
+                                      .toStringAsFixed(2);
+                                      
                                 });
                               } else {
                                 setState(() {
@@ -530,10 +530,10 @@ class _EarnEstimateState extends State<EarnEstimate> {
                             onChanged: (value) {
                               if (value.isNotEmpty) {
                                 setState(() {
-                                  earning8Days = ((percentageEarn / 100 - 1) *
+                                  earning8Days = ((percentageEarn / 100) *
                                           int.parse(rental8daysController.text))
-                                      .toStringAsFixed(2)
-                                      .replaceAll("-", "");
+                                      .toStringAsFixed(2);
+                                     
                                 });
                               } else {
                                 setState(() {
@@ -658,11 +658,11 @@ class _EarnEstimateState extends State<EarnEstimate> {
                             onChanged: (value) {
                               if (value.isNotEmpty) {
                                 setState(() {
-                                  earning20Days = ((percentageEarn / 100 - 1) *
+                                  earning20Days = ((percentageEarn / 100) *
                                           int.parse(
                                               rental20daysController.text))
-                                      .toStringAsFixed(2)
-                                      .replaceAll("-", "");
+                                      .toStringAsFixed(2);
+                                      
                                 });
                               } else {
                                 setState(() {

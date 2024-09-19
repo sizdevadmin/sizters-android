@@ -28,7 +28,7 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  bool damageProtection = false;
+  bool damageProtection = true;
   late CartPromoController controller;
 
   @override
