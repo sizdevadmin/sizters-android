@@ -914,23 +914,22 @@ class _EarnEstimateState extends State<EarnEstimate> {
           onWillPop: () async {
             return value == "3" ? true : false;
           },
-          child: Center(
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(left: 30, right: 20),
-              height: 180,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(13)),
-              child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: Column(
+          child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                    color: Colors.white, borderRadius: BorderRadius.circular(13)),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         alignment: Alignment.center,
-                        width: 280,
+                        width: MediaQuery.of(context).size.width,
                         child: Text(
                           title,
                           maxLines: 4,
@@ -949,11 +948,11 @@ class _EarnEstimateState extends State<EarnEstimate> {
                                 final BottomNavController controller =
                                     Get.put(BottomNavController());
                                 controller.updateIndex(0);
-
+                
                                 SharedPreferences sharedPreferences =
                                     await SharedPreferences.getInstance();
                                 sharedPreferences.clear();
-
+                
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
@@ -963,7 +962,7 @@ class _EarnEstimateState extends State<EarnEstimate> {
                             : value == "3"
                                 ? () {
                                     Navigator.pop(context);
-
+                
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -995,9 +994,9 @@ class _EarnEstimateState extends State<EarnEstimate> {
                         ),
                       ),
                     ],
-                  )),
-            ),
-          ),
+                  ),
+                ),
+              )),
         );
       },
     );

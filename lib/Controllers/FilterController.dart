@@ -456,10 +456,6 @@ class FilterController extends GetxController {
    
          SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    
-    // 0 for clothes filter
-    // 1 for bags filter
-
     if (pageno <= 1) {
       dialodShow(context);
     } else {

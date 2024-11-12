@@ -10,6 +10,7 @@ import 'package:d_chart/commons/data_model.dart';
 import 'package:d_chart/ordinal/bar.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -45,6 +46,7 @@ import 'package:siz/Pages/BasicSetting.dart';
 import 'package:siz/Pages/EditProfile.dart';
 import 'package:siz/Utils/Colors.dart';
 import 'package:siz/Utils/CustomCalender.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileNav extends StatefulWidget {
   const ProfileNav({super.key});
@@ -645,9 +647,27 @@ class _ProfileNavState extends State<ProfileNav> with TickerProviderStateMixin {
 
   final ScrollController tabOnController = ScrollController();
 
+     firebaseEventCalled()
+  {
+    
+     try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "DashboardAndroid",
+      );
+    } catch (e) {}
+  }
+
   @override
   void initState() {
+
+
+
     super.initState();
+
+
+    firebaseEventCalled();
 
     checkValues();
 
@@ -683,12 +703,14 @@ class _ProfileNavState extends State<ProfileNav> with TickerProviderStateMixin {
   checkValues() async {
     await controller.getProfleValue();
 
-    if (controller.review == "0") {
-    } else if (controller.review == "3") {
+     if (controller.review == "3") {
     } else if (controller.review == "2") {
     } else if (controller.loginStatus == "1") {
-    } else if (controller.loginStatus == "2") {
-    } else if (controller.loginStatus == "null") {
+    }
+    
+    //  else if (controller.loginStatus == "2") {
+    // }
+     else if (controller.loginStatus == "null") {
     } else {
       controller.getaccontDetails(context, "2024");
     }
@@ -704,152 +726,8 @@ class _ProfileNavState extends State<ProfileNav> with TickerProviderStateMixin {
         builder: (controller) {
           return SafeArea(
             child: Scaffold(
-              body: controller.review == "0"
-                  ? Container(
-                      margin: const EdgeInsets.only(left: 20, right: 20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                              margin: const EdgeInsets.only(bottom: 20),
-                              child: LottieBuilder.asset(
-                                "assets/images/underprocess.json",
-                                fit: BoxFit.cover,
-                                width: 100,
-                                height: 100,
-                              )),
-                          Container(
-                            alignment: Alignment.center,
-                            child: Text(
-                              controller.reviewMSG,
-                              maxLines: 4,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.lexendDeca(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              final BottomNavController controller =
-                                  Get.put(BottomNavController());
-                              controller.updateIndex(0);
-
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Home()),
-                                  (route) => false);
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                  top: 20, left: 20, right: 20),
-                              alignment: Alignment.center,
-                              height: 40,
-                              decoration: const BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                              child: Text(
-                                "Back to home".toUpperCase(),
-                                style: GoogleFonts.lexendExa(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w300),
-                              ),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              final BottomNavController controller =
-                                  Get.put(BottomNavController());
-
-                              dialodShow(context);
-
-                              if (await controller.getHomeData(context, "")) {
-                                Navigator.pop(context);
-
-                                checkValues();
-
-                                ChatController chatController =
-                                    Get.put(ChatController());
-
-                                chatController.getProfleValue();
-                              }
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                  top: 20, left: 20, right: 20),
-                              alignment: Alignment.center,
-                              height: 40,
-                              decoration: const BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                              child: Text(
-                                "refresh".toUpperCase(),
-                                style: GoogleFonts.lexendExa(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w300),
-                              ),
-                            ),
-                          ),
-
-                           const SizedBox(height: 20),
-
-                           
-                            Text(
-                                "Try refreshing",
-                                style: GoogleFonts.lexendDeca(
-                                  fontStyle: FontStyle.italic,
-                                     fontSize: 16,
-                                    color: Colors.grey,
-                                    
-                                    fontWeight: FontWeight.w300),
-                              ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 60, bottom: 10),
-                            child: InkWell(
-                              onTap: () async {
-                                SharedPreferences sharedPreferences =
-                                    await SharedPreferences.getInstance();
-
-                                sharedPreferences.setString(
-                                    SizValue.underReview, "null");
-                                sharedPreferences.setString(
-                                    SizValue.isLogged, "null");
-
-                                ChatController chatController =
-                                    Get.put(ChatController());
-                                chatController.getProfleValue();
-                                profileController pController =
-                                    Get.put(profileController());
-                                pController.getProfleValue();
-
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            LoginPage(otpNumber: "")));
-                              },
-                              child: Text(
-                                "Use another account ?".toUpperCase(),
-                                style: GoogleFonts.lexendDeca(
-                                    decoration: TextDecoration.underline,
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w300),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : controller.review == "2"
+              body: 
+                   controller.review == "2"
                       ? Container(
                           margin: const EdgeInsets.only(left: 20, right: 20),
                           child: Column(
@@ -910,7 +788,31 @@ class _ProfileNavState extends State<ProfileNav> with TickerProviderStateMixin {
                                         fontWeight: FontWeight.w300),
                                   ),
                                 ),
-                              )
+                              ),
+
+                              InkWell(
+                                onTap: ()async {
+                                    var androidUrl = "whatsapp://send?phone=+971553674923&text=";
+                                   await launchUrl(Uri.parse(androidUrl));
+                                },
+                                child: Container(
+                                    margin: const EdgeInsets.only(
+                                        top: 20, left: 20, right: 20),
+                                    alignment: Alignment.center,
+                                    height: 40,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius:
+                                            BorderRadius.all(Radius.circular(5))),
+                                    child: Text(
+                                      "Talk to support".toUpperCase(),
+                                      style: GoogleFonts.lexendExa(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300),
+                                    ),
+                                  ),
+                              ),
                             ],
                           ),
                         )
@@ -1115,114 +1017,114 @@ class _ProfileNavState extends State<ProfileNav> with TickerProviderStateMixin {
                                     ],
                                   ),
                                 )
-                              : controller.loginStatus == "2"
-                                  ? Container(
-                                      margin: const EdgeInsets.only(
-                                          left: 20, right: 20),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                              margin: const EdgeInsets.only(
-                                                  bottom: 20),
-                                              child: LottieBuilder.asset(
-                                                "assets/images/incomplete.json",
-                                                fit: BoxFit.cover,
-                                                width: 100,
-                                                height: 100,
-                                              )),
-                                          Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              controller.incompleteMsg,
-                                              maxLines: 4,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.lexendDeca(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w300,
-                                                  color: Colors.black),
-                                            ),
-                                          ),
-                                          InkWell(
-                                            onTap: () async {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          AccountCreate()));
-                                            },
-                                            child: Container(
-                                              margin: const EdgeInsets.only(
-                                                  top: 20, left: 20, right: 20),
-                                              alignment: Alignment.center,
-                                              height: 40,
-                                              decoration: const BoxDecoration(
-                                                  color: Colors.black,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(5))),
-                                              child: Text(
-                                                "COMPLETE SIGNUP".toUpperCase(),
-                                                style: GoogleFonts.lexendExa(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w300),
-                                              ),
-                                            ),
-                                          ),
-                                          InkWell(
-                                            splashFactory:
-                                                NoSplash.splashFactory,
-                                            highlightColor: Colors.transparent,
-                                            onTap: () async {
-                                              SharedPreferences
-                                                  sharedPreferences =
-                                                  await SharedPreferences
-                                                      .getInstance();
+                              // : controller.loginStatus == "2"
+                              //     ? Container(
+                              //         margin: const EdgeInsets.only(
+                              //             left: 20, right: 20),
+                              //         child: Column(
+                              //           mainAxisAlignment:
+                              //               MainAxisAlignment.center,
+                              //           crossAxisAlignment:
+                              //               CrossAxisAlignment.center,
+                              //           children: [
+                              //             Container(
+                              //                 margin: const EdgeInsets.only(
+                              //                     bottom: 20),
+                              //                 child: LottieBuilder.asset(
+                              //                   "assets/images/incomplete.json",
+                              //                   fit: BoxFit.cover,
+                              //                   width: 100,
+                              //                   height: 100,
+                              //                 )),
+                              //             Container(
+                              //               alignment: Alignment.center,
+                              //               child: Text(
+                              //                 controller.incompleteMsg,
+                              //                 maxLines: 4,
+                              //                 overflow: TextOverflow.ellipsis,
+                              //                 textAlign: TextAlign.center,
+                              //                 style: GoogleFonts.lexendDeca(
+                              //                     fontSize: 16,
+                              //                     fontWeight: FontWeight.w300,
+                              //                     color: Colors.black),
+                              //               ),
+                              //             ),
+                              //             InkWell(
+                              //               onTap: () async {
+                              //                 Navigator.push(
+                              //                     context,
+                              //                     MaterialPageRoute(
+                              //                         builder: (context) =>
+                              //                             AccountCreate()));
+                              //               },
+                              //               child: Container(
+                              //                 margin: const EdgeInsets.only(
+                              //                     top: 20, left: 20, right: 20),
+                              //                 alignment: Alignment.center,
+                              //                 height: 40,
+                              //                 decoration: const BoxDecoration(
+                              //                     color: Colors.black,
+                              //                     borderRadius:
+                              //                         BorderRadius.all(
+                              //                             Radius.circular(5))),
+                              //                 child: Text(
+                              //                   "COMPLETE SIGNUP".toUpperCase(),
+                              //                   style: GoogleFonts.lexendExa(
+                              //                       color: Colors.white,
+                              //                       fontSize: 16,
+                              //                       fontWeight:
+                              //                           FontWeight.w300),
+                              //                 ),
+                              //               ),
+                              //             ),
+                              //             InkWell(
+                              //               splashFactory:
+                              //                   NoSplash.splashFactory,
+                              //               highlightColor: Colors.transparent,
+                              //               onTap: () async {
+                              //                 SharedPreferences
+                              //                     sharedPreferences =
+                              //                     await SharedPreferences
+                              //                         .getInstance();
 
-                                              sharedPreferences.setString(
-                                                  SizValue.underReview, "null");
-                                              sharedPreferences.setString(
-                                                  SizValue.isLogged, "null");
+                              //                 sharedPreferences.setString(
+                              //                     SizValue.underReview, "null");
+                              //                 sharedPreferences.setString(
+                              //                     SizValue.isLogged, "null");
 
-                                              ChatController chatController =
-                                                  Get.put(ChatController());
-                                              chatController.getProfleValue();
-                                              profileController pController =
-                                                  Get.put(profileController());
-                                              pController.getProfleValue();
+                              //                 ChatController chatController =
+                              //                     Get.put(ChatController());
+                              //                 chatController.getProfleValue();
+                              //                 profileController pController =
+                              //                     Get.put(profileController());
+                              //                 pController.getProfleValue();
 
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          LoginPage(
-                                                              otpNumber: "")));
-                                            },
-                                            child: Container(
-                                              margin: const EdgeInsets.only(
-                                                  top: 60, bottom: 10),
-                                              child: Text(
-                                                "Use another account ?"
-                                                    .toUpperCase(),
-                                                style: GoogleFonts.lexendDeca(
-                                                    decoration: TextDecoration
-                                                        .underline,
-                                                    fontSize: 16,
-                                                    color: Colors.grey,
-                                                    fontWeight:
-                                                        FontWeight.w300),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
+                              //                 Navigator.push(
+                              //                     context,
+                              //                     MaterialPageRoute(
+                              //                         builder: (context) =>
+                              //                             LoginPage(
+                              //                                 otpNumber: "")));
+                              //               },
+                              //               child: Container(
+                              //                 margin: const EdgeInsets.only(
+                              //                     top: 60, bottom: 10),
+                              //                 child: Text(
+                              //                   "Use another account ?"
+                              //                       .toUpperCase(),
+                              //                   style: GoogleFonts.lexendDeca(
+                              //                       decoration: TextDecoration
+                              //                           .underline,
+                              //                       fontSize: 16,
+                              //                       color: Colors.grey,
+                              //                       fontWeight:
+                              //                           FontWeight.w300),
+                              //                 ),
+                              //               ),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //       )
                                   : controller.loginStatus == "null"
                                       ? Container(
                                           margin: const EdgeInsets.only(
@@ -1300,6 +1202,176 @@ class _ProfileNavState extends State<ProfileNav> with TickerProviderStateMixin {
                                         )
                                       : Column(
                                           children: [
+
+                                         
+
+                                            Visibility(
+                                              
+                                          visible:  controller.review == "0",
+                                          child: Container(
+                                            padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 20,
+                                                top: 10,
+                                                bottom: 10),
+                                            color: Colors.yellow,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Expanded(
+                                                    child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "Your profile is under review, try refreshing",
+                                                      style: GoogleFonts
+                                                          .lexendDeca(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w300),
+                                                    ),
+                                                    Text(
+                                                      "OR",
+                                                      style: GoogleFonts
+                                                          .lexendDeca(
+                                                              color:
+                                                                  Colors.grey,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w300),
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () async {
+                                                        
+                                                          SharedPreferences sharedPreferences =
+                                    await SharedPreferences.getInstance();
+
+                                sharedPreferences.setString(
+                                    SizValue.underReview, "null");
+                                sharedPreferences.setString(
+                                    SizValue.isLogged, "null");
+
+                                ChatController chatController =
+                                    Get.put(ChatController());
+                                chatController.getProfleValue();
+                                profileController pController =
+                                    Get.put(profileController());
+                                pController.getProfleValue();
+
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            LoginPage(otpNumber: "")));
+                                                      },
+                                                      child: Text(
+                                                        "Use another account ?".toUpperCase(),
+                                                        style: GoogleFonts
+                                                            .lexendDeca(
+                                                                decoration: TextDecoration.underline,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w300),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                                InkWell(
+                                                    onTap: () async {
+                                                    
+                                                     final BottomNavController controller =
+                                  Get.put(BottomNavController());
+
+                              dialodShow(context);
+
+                              if (await controller.getHomeData(context, "")) {
+                                Navigator.pop(context);
+
+                                checkValues();
+
+                                ChatController chatController =
+                                    Get.put(ChatController());
+
+                                chatController.getProfleValue();
+                              }
+                                                    },
+                                                    child: const Icon(
+                                                        Icons.refresh))
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+
+
+
+
+                                               Visibility(
+                                          visible:controller.loginStatus == "2",
+                                          child: InkWell(
+                                            onTap: () {
+                                                 Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AccountCreate()));
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.only(
+                                                  left: 20,
+                                                  right: 20,
+                                                  top: 10,
+                                                  bottom: 10),
+                                              color: const Color.fromARGB(255, 255, 155, 147),
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Expanded(
+                                                      child: Container(
+                                                        margin: const EdgeInsets.only(left: 30),
+                                                        alignment: Alignment.center,
+                                                        child: Text(
+                                                          "Please complete Id verification",
+                                                          style: GoogleFonts
+                                                              .lexendDeca(
+                                                                  color:
+                                                                      Colors.black,
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300),
+                                                        ),
+                                                      )),
+                                                  const Icon(
+                                                      Icons.keyboard_double_arrow_right_sharp,size: 30,)
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+
                                             // top four icons ==============================================================================================
 
                                             Container(
@@ -1659,12 +1731,16 @@ class _ProfileNavState extends State<ProfileNav> with TickerProviderStateMixin {
                                                                   ),
                                                                 ),
                                                                 InkWell(
-                                                                  onTap: controller
+                                                                  onTap: 
+                                                                  
+                                                                  controller
                                                                               .decordedlendingReponse["current_balance"]
                                                                               .toString() ==
                                                                           "0"
                                                                       ? null
-                                                                      : () {
+                                                                      : 
+                                                                      
+                                                                      () {
                                                                           Navigator.push(
                                                                               context,
                                                                               MaterialPageRoute(builder: (context) => CreditPage(earning: controller.decordedlendingReponse["current_balance"].toString(), totalearning: controller.decordedlendingReponse["total_balance"].toString())));
@@ -2701,6 +2777,45 @@ class _ProfileNavState extends State<ProfileNav> with TickerProviderStateMixin {
                                                                                                                               ),
                                                                                                                             ],
                                                                                                                           )
+
+
+                                                                                                                                    :
+
+
+
+
+                                                                   decordedrequestResponse[
+                                                                      index]
+                                                                  ["status"] ==
+                                                              7
+                                                          ? Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              width: 120,
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(5),
+                                                              decoration: BoxDecoration(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5)),
+                                                              child: Text(
+                                                                "Cancelled"
+                                                                    .toUpperCase(),
+                                                                style: GoogleFonts.lexendExa(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300,
+                                                                    fontSize:
+                                                                        9),
+                                                              ),
+                                                            )
                                                                                                                         :
 
                                                                                                                         // else empty container

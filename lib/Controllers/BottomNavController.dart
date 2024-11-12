@@ -62,7 +62,7 @@ class BottomNavController extends GetxController{
   getHomeData( BuildContext context ,String firebaseToken) async {
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
+     
     try {
       final response = await http.post(Uri.parse(SizValue.getHome), body: {
         'user_key': sharedPreferences.getString(SizValue.isLogged).toString() ==
@@ -74,6 +74,7 @@ class BottomNavController extends GetxController{
                         "2"
                     ? ""
                     : sharedPreferences.getString(SizValue.userKey).toString(),
+
         "push_token": firebaseToken
       });
 

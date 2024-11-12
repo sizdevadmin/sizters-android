@@ -201,6 +201,11 @@ try {
         profileController pController=Get.put(profileController());
         pController.getProfleValue();
 
+           
+         chatController.onConnectPressed();
+         chatController.getChatListOutside(1, "");
+         pController. getaccontDetails(context,"2024");
+
            Navigator.pop(context);
 
         //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>AccountCreate()));

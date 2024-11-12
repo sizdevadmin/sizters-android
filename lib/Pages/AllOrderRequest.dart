@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
@@ -239,7 +240,20 @@ class _AllOrderRequestState extends State<AllOrderRequest> {
       scrollListenerMR();
     });
     myrequests(1);
+    firebaseEventCalled();
     super.initState();
+  }
+
+
+
+   firebaseEventCalled() {
+    try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "RentalHistoryAndroid",
+      );
+    } catch (e) {}
   }
 
   @override
@@ -283,38 +297,40 @@ class _AllOrderRequestState extends State<AllOrderRequest> {
                     margin: const EdgeInsets.only(left: 30),
                     child: Text("All Orders".toUpperCase(),
                         style: SizValue.toolbarStyle)),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  direction: Axis.horizontal,
-                  children: [
-                    InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Wishlist()));
-                        },
-                        child: SvgPicture.asset(
-                          "assets/images/heart.svg",
-                          width: 20,
-                          height: 20,
-                        )),
-                    const SizedBox(width: 20),
-                    InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Cart()));
-                        },
-                        child: SvgPicture.asset(
-                          "assets/images/bag.svg",
-                          width: 20,
-                          height: 20,
-                        )),
-                  ],
-                )
+
+                        const SizedBox(width: 30)
+                // Wrap(
+                //   alignment: WrapAlignment.center,
+                //   crossAxisAlignment: WrapCrossAlignment.center,
+                //   direction: Axis.horizontal,
+                //   children: [
+                //     InkWell(
+                //         onTap: () {
+                //           Navigator.push(
+                //               context,
+                //               MaterialPageRoute(
+                //                   builder: (context) => Wishlist()));
+                //         },
+                //         child: SvgPicture.asset(
+                //           "assets/images/heart.svg",
+                //           width: 20,
+                //           height: 20,
+                //         )),
+                //     const SizedBox(width: 20),
+                //     InkWell(
+                //         onTap: () {
+                //           Navigator.push(
+                //               context,
+                //               MaterialPageRoute(
+                //                   builder: (context) => const Cart()));
+                //         },
+                //         child: SvgPicture.asset(
+                //           "assets/images/bag.svg",
+                //           width: 20,
+                //           height: 20,
+                //         )),
+                //   ],
+                // )
               ],
             ),
           ),
@@ -1048,6 +1064,44 @@ class _AllOrderRequestState extends State<AllOrderRequest> {
                                                                     ],
                                                                   )
                                                                   :
+
+
+
+
+                                                                   decordedrequestResponse[
+                                                                      index]
+                                                                  ["status"] ==
+                                                              7
+                                                          ? Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              width: 120,
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(5),
+                                                              decoration: BoxDecoration(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5)),
+                                                              child: Text(
+                                                                "Cancelled"
+                                                                    .toUpperCase(),
+                                                                style: GoogleFonts.lexendExa(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300,
+                                                                    fontSize:
+                                                                        9),
+                                                              ),
+                                                            ):
+
+                                                                  
 
                                                                   // else empty container
 

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
@@ -54,22 +55,16 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
   List<dynamic> searchDecordedList = [];
 
   getSearch(String value) async {
-
     //  dialodShow(context);
     try {
-      final response =
-          await http.post(Uri.parse(SizValue.searchSuggestion), body: {
-        'user_key': "",
-         'search':value
-      });
+      final response = await http.post(Uri.parse(SizValue.searchSuggestion),
+          body: {'user_key': "", 'search': value});
 
       searchResponse = jsonDecode(response.body);
 
       if (searchResponse["success"] == true) {
         setState(() {
           searchDecordedList = searchResponse["list"];
-
-       
         });
       } else if (searchResponse["success"] == false) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -79,12 +74,7 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                     fontWeight: FontWeight.w300,
                     color: Colors.white))));
       }
-    }
-
-    catch(e)
-    {
-      
-    }
+    } catch (e) {}
   }
 
   // snackbar ==================================================================================================
@@ -122,11 +112,21 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
   final ScrollController _scrollControllerC = ScrollController();
   final ScrollController _scrollControllerB = ScrollController();
 
-  
-   Timer? checkTypingTimer;
+  Timer? checkTypingTimer;
+
+  firebaseEventCalled() {
+    try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "BrowseAndroid",
+      );
+    } catch (e) {}
+  }
 
   @override
   void initState() {
+    firebaseEventCalled();
     _scrollControllerC.addListener(() async {
       scrollListenerclothes();
     });
@@ -136,7 +136,7 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
 
     tabController = MyTabController(length: 2, vsync: this);
 
-     controller.getProducts(context, "1", 0, "", 1);
+    controller.getProducts(context, "1", 0, "", 1);
 
     super.initState();
   }
@@ -190,11 +190,7 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
     if (controller.isLoadingMoreB) return;
 
     _scrollControllerB.addListener(() {
-
-      
-
-
-       if (_scrollControllerB.position.userScrollDirection ==
+      if (_scrollControllerB.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (isVisibleBags) {
           setState(() {
@@ -213,9 +209,6 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
           });
         }
       }
-
-
-
 
       if (_scrollControllerB.offset >=
           _scrollControllerB.position.maxScrollExtent - 300) {
@@ -277,77 +270,82 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                           children: [
                             InkWell(
                                 onTap: () async {
+                                  SharedPreferences sharedPreferences =
+                                      await SharedPreferences.getInstance();
 
-                             
+                                  if (sharedPreferences
+                                          .getString(SizValue.isLogged)
+                                          .toString() ==
+                                      "null") {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                LoginPage(otpNumber: "")));
+                                  } else if (sharedPreferences
+                                          .getString(SizValue.isLogged)
+                                          .toString() ==
+                                      "1") {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                BasicLoginInfo(
+                                                    fromWhere: sharedPreferences
+                                                        .getString(
+                                                            SizValue.source)
+                                                        .toString())));
+                                  }
+                                  //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                                  //  {
 
+                                  //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
 
+                                  // }
 
-                          SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+                                  // else if (sharedPreferences
+                                  //         .getString(SizValue.underReview)
+                                  //         .toString() ==
+                                  //     "0") {
+                                  //   showReviewdialog(
+                                  //       sharedPreferences
+                                  //           .getString(SizValue.underReviewMsg)
+                                  //           .toString(),
+                                  //       sharedPreferences
+                                  //           .getString(SizValue.underReview)
+                                  //           .toString());
+                                  // } 
                                   
-                             if(sharedPreferences.getString(SizValue.isLogged).toString()=="null")
-                             {
-
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(otpNumber: "")));
-
-                             }
-
-                      else if(sharedPreferences.getString(SizValue.isLogged).toString()=="1")
-                             {
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
-
-                             }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
-
-                            }
-                               
-                               
-                              
-
-
-                            else if(sharedPreferences.getString(SizValue.underReview).toString()=="0"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.underReviewMsg).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-                                }
-
-                                
-                                 else if(sharedPreferences.getString(SizValue.underReview).toString()=="2"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.rejectedReviewMSG).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-
-                                }
-
-                                 else if(sharedPreferences.getString(SizValue.underReview).toString()=="3"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.incompleteMessage).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-
-                                }
-
-                                else{
-
-                                  
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                               Wishlist()));
-
-
-                                }
-
-
-
-
-
+                                  else if (sharedPreferences
+                                          .getString(SizValue.underReview)
+                                          .toString() ==
+                                      "2") {
+                                    showReviewdialog(
+                                        sharedPreferences
+                                            .getString(
+                                                SizValue.rejectedReviewMSG)
+                                            .toString(),
+                                        sharedPreferences
+                                            .getString(SizValue.underReview)
+                                            .toString());
+                                  } else if (sharedPreferences
+                                          .getString(SizValue.underReview)
+                                          .toString() ==
+                                      "3") {
+                                    showReviewdialog(
+                                        sharedPreferences
+                                            .getString(
+                                                SizValue.incompleteMessage)
+                                            .toString(),
+                                        sharedPreferences
+                                            .getString(SizValue.underReview)
+                                            .toString());
+                                  } else {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Wishlist()));
+                                  }
                                 },
                                 child: SvgPicture.asset(
                                   "assets/images/heart.svg",
@@ -356,89 +354,89 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                 )),
                             const SizedBox(width: 20),
                             InkWell(
-                                onTap: ()async {
+                                onTap: () async {
+                                  SharedPreferences sharedPreferences =
+                                      await SharedPreferences.getInstance();
 
-                                 
-
-
-
-
-
-
-
-                                 
-                          SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+                                  if (sharedPreferences
+                                          .getString(SizValue.isLogged)
+                                          .toString() ==
+                                      "null") {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                LoginPage(otpNumber: "")));
+                                  } else if (sharedPreferences
+                                          .getString(SizValue.isLogged)
+                                          .toString() ==
+                                      "1") {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                BasicLoginInfo(
+                                                    fromWhere: sharedPreferences
+                                                        .getString(
+                                                            SizValue.source)
+                                                        .toString())));
+                                  } else if (sharedPreferences
+                                          .getString(SizValue.isLogged)
+                                          .toString() ==
+                                      "2") {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AccountCreate()));
+                                  }
                                   
-                             if(sharedPreferences.getString(SizValue.isLogged).toString()=="null")
-                             {
-
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(otpNumber: "")));
-
-                             }
-
-                                   else if(sharedPreferences.getString(SizValue.isLogged).toString()=="1")
-                             {
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
-
-                             }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
-
-                            }
-                               
-                               
-                              
-
-
-                            else if(sharedPreferences.getString(SizValue.underReview).toString()=="0"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.underReviewMsg).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-                                }
-
-                                
-                                 else if(sharedPreferences.getString(SizValue.underReview).toString()=="2"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.rejectedReviewMSG).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-
-                                }
-
-                                 else if(sharedPreferences.getString(SizValue.underReview).toString()=="3"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.incompleteMessage).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-
-                                }
-
-                                else
-                                {
-
-
                                   
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => const Cart()));
-
-                                }
-
-
-
-
-
-
-
-
-
-
-
+                                  
+                                   else if (sharedPreferences
+                                          .getString(SizValue.underReview)
+                                          .toString() ==
+                                      "0") {
+                                    showReviewdialog(
+                                        sharedPreferences
+                                            .getString(SizValue.underReviewMsg)
+                                            .toString(),
+                                        sharedPreferences
+                                            .getString(SizValue.underReview)
+                                            .toString());
+                                  }
+                                  
+                                   else if (sharedPreferences
+                                          .getString(SizValue.underReview)
+                                          .toString() ==
+                                      "2") {
+                                    showReviewdialog(
+                                        sharedPreferences
+                                            .getString(
+                                                SizValue.rejectedReviewMSG)
+                                            .toString(),
+                                        sharedPreferences
+                                            .getString(SizValue.underReview)
+                                            .toString());
+                                  } else if (sharedPreferences
+                                          .getString(SizValue.underReview)
+                                          .toString() ==
+                                      "3") {
+                                    showReviewdialog(
+                                        sharedPreferences
+                                            .getString(
+                                                SizValue.incompleteMessage)
+                                            .toString(),
+                                        sharedPreferences
+                                            .getString(SizValue.underReview)
+                                            .toString());
+                                  } else {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const Cart()));
+                                  }
                                 },
                                 child: SvgPicture.asset(
                                   "assets/images/bag.svg",
@@ -472,23 +470,13 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                       indicator:
                           const BoxDecoration(color: MyColors.themecolor),
                       onTap: (value) {
-                      
-
-
-                      
-
-
-
                         setState(() {
                           currentTab = value;
-                          isVisible=true;
-                          isVisibleBags=true;
+                          isVisible = true;
+                          isVisibleBags = true;
                         });
 
                         if (value == 1) {
-
-
-                          
                           if (!bagclicked) {
                             controller.getProducts(context, "2", 1, "", 1);
                           }
@@ -546,7 +534,7 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                       MaterialPageRoute(
                                                           builder: (context) =>
                                                               ProductView(
-                                                               index: index,
+                                                                index: index,
                                                                 id: controller
                                                                     .decordedResponse[
                                                                         index]
@@ -590,115 +578,127 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                                           context)
                                                                       .size
                                                                       .width,
-                                                              fit: BoxFit.cover  ,
+                                                              fit: BoxFit.cover,
                                                             ),
                                                           ),
                                                           InkWell(
-                                                              onTap: ()async {
+                                                              onTap: () async {
+                                                                SharedPreferences
+                                                                    sharedPreferences =
+                                                                    await SharedPreferences
+                                                                        .getInstance();
 
-
-
-
-
-
-
-                              SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
-                                  
-                             if(sharedPreferences.getString(SizValue.isLogged).toString()=="null")
-                             {
-
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(otpNumber: "")));
-
-                             }
-
-                                   else if(sharedPreferences.getString(SizValue.isLogged).toString()=="1")
-                             {
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
-
-                             }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
-
-                            }
-                               
-                               
-                              
-
-
-                            else if(sharedPreferences.getString(SizValue.underReview).toString()=="0"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.underReviewMsg).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-                                }
-
-                                
-                                 else if(sharedPreferences.getString(SizValue.underReview).toString()=="2"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.rejectedReviewMSG).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-
-                                }
-
-                                 else if(sharedPreferences.getString(SizValue.underReview).toString()=="3"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.incompleteMessage).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-
-                                }
-
-                                else
-                                {
-
-
-                                   if (controller.decordedResponse[
-                                                                            index]
-                                                                        [
-                                                                        "wishlist"] ==
-                                                                    0) {
-                                                                  controller.addWishlist(
+                                                                if (sharedPreferences
+                                                                        .getString(SizValue
+                                                                            .isLogged)
+                                                                        .toString() ==
+                                                                    "null") {
+                                                                  Navigator.push(
                                                                       context,
-                                                                      controller
-                                                                          .decordedResponse[
-                                                                              index]
-                                                                              [
-                                                                              "id"]
-                                                                          .toString(),
-                                                                      index,
-                                                                      "1",
-                                                                      
-                                                                      "1");
-                                                                } else {
-                                                                  controller.removeWishlist(
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              LoginPage(otpNumber: "")));
+                                                                } else if (sharedPreferences
+                                                                        .getString(
+                                                                            SizValue.isLogged)
+                                                                        .toString() ==
+                                                                    "1") {
+                                                                  Navigator.push(
                                                                       context,
-                                                                      controller
-                                                                          .decordedResponse[
-                                                                              index]
-                                                                              ["id"]
-                                                                          .toString(),
-                                                                      index,
-                                                                      "1","1");
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
                                                                 }
+                                                                //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                                                                //  {
 
-                                }
+                                                                //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
 
+                                                                // }
+
+                                                                // else if (sharedPreferences
+                                                                //         .getString(SizValue
+                                                                //             .underReview)
+                                                                //         .toString() ==
+                                                                //     "0") {
+                                                                //   showReviewdialog(
+                                                                //       sharedPreferences
+                                                                //           .getString(SizValue
+                                                                //               .underReviewMsg)
+                                                                //           .toString(),
+                                                                //       sharedPreferences
+                                                                //           .getString(
+                                                                //               SizValue.underReview)
+                                                                //           .toString());
+                                                                // }
                                                                 
+                                                                 else if (sharedPreferences
+                                                                        .getString(SizValue
+                                                                            .underReview)
+                                                                        .toString() ==
+                                                                    "2") {
+                                                                  showReviewdialog(
+                                                                      sharedPreferences
+                                                                          .getString(SizValue
+                                                                              .rejectedReviewMSG)
+                                                                          .toString(),
+                                                                      sharedPreferences
+                                                                          .getString(
+                                                                              SizValue.underReview)
+                                                                          .toString());
+                                                                } else if (sharedPreferences
+                                                                        .getString(
+                                                                            SizValue.underReview)
+                                                                        .toString() ==
+                                                                    "3") {
+                                                                  showReviewdialog(
+                                                                      sharedPreferences
+                                                                          .getString(SizValue
+                                                                              .incompleteMessage)
+                                                                          .toString(),
+                                                                      sharedPreferences
+                                                                          .getString(
+                                                                              SizValue.underReview)
+                                                                          .toString());
+                                                                } else {
+                                                                  if (controller
+                                                                              .decordedResponse[index]
+                                                                          [
+                                                                          "wishlist"] ==
+                                                                      0) {
+                                                                    controller.addWishlist(
+                                                                        context,
+                                                                        controller
+                                                                            .decordedResponse[index]["id"]
+                                                                            .toString(),
+                                                                        index,
+                                                                        "1",
+                                                                        "1");
+                                                                  } else {
+                                                                    controller.removeWishlist(
+                                                                        context,
+                                                                        controller
+                                                                            .decordedResponse[index]["id"]
+                                                                            .toString(),
+                                                                        index,
+                                                                        "1",
+                                                                        "1");
+                                                                  }
+                                                                }
                                                               },
                                                               child: Container(
-                                                                alignment: Alignment.centerRight,
-                                                                child: Container(
-                                                                 
+                                                                alignment: Alignment
+                                                                    .centerRight,
+                                                                child:
+                                                                    Container(
                                                                   padding:
                                                                       const EdgeInsets
-                                                                          .all(3),
+                                                                          .all(
+                                                                          3),
                                                                   margin:
                                                                       const EdgeInsets
-                                                                          .all(4),
+                                                                          .all(
+                                                                          4),
                                                                   decoration: const BoxDecoration(
                                                                       shape: BoxShape
                                                                           .circle,
@@ -761,8 +761,6 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                               ),
                                                             ),
                                                           ),
-
-
                                                         ],
                                                       ),
                                                       Column(
@@ -815,12 +813,24 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                               ),
                                                               Container(
                                                                 height: 15,
-                                                                padding: const EdgeInsets.only(left: 5,right: 5),
-                                                                alignment: Alignment.center,
-                                                                constraints: const BoxConstraints(minWidth: 20),
-                                                               
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        left: 5,
+                                                                        right:
+                                                                            5),
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                constraints:
+                                                                    const BoxConstraints(
+                                                                        minWidth:
+                                                                            20),
                                                                 decoration: BoxDecoration(
-                                                                   borderRadius: const BorderRadius.all(Radius.circular(50)),
+                                                                    borderRadius: const BorderRadius
+                                                                        .all(
+                                                                        Radius.circular(
+                                                                            50)),
                                                                     border: Border.all(
                                                                         color: Colors
                                                                             .black,
@@ -1004,7 +1014,7 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                       MaterialPageRoute(
                                                           builder: (context) =>
                                                               ProductView(
-                                                              index: index,
+                                                                index: index,
                                                                 id: controller
                                                                     .decordedResponsebag[
                                                                         index]
@@ -1052,110 +1062,123 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                             ),
                                                           ),
                                                           InkWell(
-                                                              onTap: ()async {
+                                                              onTap: () async {
+                                                                SharedPreferences
+                                                                    sharedPreferences =
+                                                                    await SharedPreferences
+                                                                        .getInstance();
 
-
-                                                               
-
-
-                             SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
-                                  
-                             if(sharedPreferences.getString(SizValue.isLogged).toString()=="null")
-                             {
-
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(otpNumber: "")));
-
-                             }
-
-                                   else if(sharedPreferences.getString(SizValue.isLogged).toString()=="1")
-                             {
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
-
-                             }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
-
-                            }    
-                               
-                              
-
-
-                            else if(sharedPreferences.getString(SizValue.underReview).toString()=="0"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.underReviewMsg).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-                                }
-
-                                
-                                 else if(sharedPreferences.getString(SizValue.underReview).toString()=="2"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.rejectedReviewMSG).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-
-                                }
-
-                                 else if(sharedPreferences.getString(SizValue.underReview).toString()=="3"){
-
-                                  showReviewdialog(sharedPreferences.getString(SizValue.incompleteMessage).toString(),sharedPreferences.getString(SizValue.underReview).toString());
-
-    
-
-                                }
-
-                                else
-                                {
-
-                                    if (controller.decordedResponsebag[
-                                                                            index]
-                                                                        [
-                                                                        "wishlist"] ==
-                                                                    0) {
-                                                                  controller.addWishlist(
+                                                                if (sharedPreferences
+                                                                        .getString(SizValue
+                                                                            .isLogged)
+                                                                        .toString() ==
+                                                                    "null") {
+                                                                  Navigator.push(
                                                                       context,
-                                                                      controller
-                                                                          .decordedResponsebag[
-                                                                              index]
-                                                                              [
-                                                                              "id"]
-                                                                          .toString(),
-                                                                      index,
-                                                                      "2","2");
-                                                                } else {
-                                                                  controller.removeWishlist(
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              LoginPage(otpNumber: "")));
+                                                                } else if (sharedPreferences
+                                                                        .getString(
+                                                                            SizValue.isLogged)
+                                                                        .toString() ==
+                                                                    "1") {
+                                                                  Navigator.push(
                                                                       context,
-                                                                      controller
-                                                                          .decordedResponsebag[
-                                                                              index]
-                                                                              [
-                                                                              "id"]
-                                                                          .toString(),
-                                                                      index,
-                                                                      "2","2");
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
                                                                 }
+                                                                //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                                                                //  {
 
-                                }
+                                                                //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
 
+                                                                // }
 
-
-
-
-                                                              
+                                                                // else if (sharedPreferences
+                                                                //         .getString(SizValue
+                                                                //             .underReview)
+                                                                //         .toString() ==
+                                                                //     "0") {
+                                                                //   showReviewdialog(
+                                                                //       sharedPreferences
+                                                                //           .getString(SizValue
+                                                                //               .underReviewMsg)
+                                                                //           .toString(),
+                                                                //       sharedPreferences
+                                                                //           .getString(
+                                                                //               SizValue.underReview)
+                                                                //           .toString());
+                                                                // } 
+                                                                
+                                                                else if (sharedPreferences
+                                                                        .getString(SizValue
+                                                                            .underReview)
+                                                                        .toString() ==
+                                                                    "2") {
+                                                                  showReviewdialog(
+                                                                      sharedPreferences
+                                                                          .getString(SizValue
+                                                                              .rejectedReviewMSG)
+                                                                          .toString(),
+                                                                      sharedPreferences
+                                                                          .getString(
+                                                                              SizValue.underReview)
+                                                                          .toString());
+                                                                } else if (sharedPreferences
+                                                                        .getString(
+                                                                            SizValue.underReview)
+                                                                        .toString() ==
+                                                                    "3") {
+                                                                  showReviewdialog(
+                                                                      sharedPreferences
+                                                                          .getString(SizValue
+                                                                              .incompleteMessage)
+                                                                          .toString(),
+                                                                      sharedPreferences
+                                                                          .getString(
+                                                                              SizValue.underReview)
+                                                                          .toString());
+                                                                } else {
+                                                                  if (controller
+                                                                              .decordedResponsebag[index]
+                                                                          [
+                                                                          "wishlist"] ==
+                                                                      0) {
+                                                                    controller.addWishlist(
+                                                                        context,
+                                                                        controller
+                                                                            .decordedResponsebag[index]["id"]
+                                                                            .toString(),
+                                                                        index,
+                                                                        "2",
+                                                                        "2");
+                                                                  } else {
+                                                                    controller.removeWishlist(
+                                                                        context,
+                                                                        controller
+                                                                            .decordedResponsebag[index]["id"]
+                                                                            .toString(),
+                                                                        index,
+                                                                        "2",
+                                                                        "2");
+                                                                  }
+                                                                }
                                                               },
                                                               child: Container(
-                                                                alignment: Alignment.centerRight,
-                                                                child: Container(
-                                                                
+                                                                alignment: Alignment
+                                                                    .centerRight,
+                                                                child:
+                                                                    Container(
                                                                   padding:
                                                                       const EdgeInsets
-                                                                          .all(3),
+                                                                          .all(
+                                                                          3),
                                                                   margin:
                                                                       const EdgeInsets
-                                                                          .all(4),
+                                                                          .all(
+                                                                          4),
                                                                   decoration: const BoxDecoration(
                                                                       shape: BoxShape
                                                                           .circle,
@@ -1410,7 +1433,9 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                             ]),
                         // search bar TOP ===================================================================================
                         VisibleOpacity(
-                          visible: tabController.index==0? isVisible:isVisibleBags,
+                          visible: tabController.index == 0
+                              ? isVisible
+                              : isVisibleBags,
                           duration: const Duration(milliseconds: 500),
                           child: AnimatedContainer(
                             alignment: Alignment.topCenter,
@@ -1447,31 +1472,26 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                               if (value.isEmpty) {
                                                 setState(() {
                                                   showarrowsearch = false;
-                                                   searchInputValue=value;
+                                                  searchInputValue = value;
                                                 });
                                               } else {
                                                 setState(() {
                                                   showarrowsearch = true;
-                                                  searchInputValue=value;
-                                                  
+                                                  searchInputValue = value;
                                                 });
                                               }
 
-                                                startTimer() {
-                              checkTypingTimer = Timer(
-                                  const Duration(milliseconds: 600), () async {
-                                
+                                              startTimer() {
+                                                checkTypingTimer = Timer(
+                                                    const Duration(
+                                                        milliseconds: 600),
+                                                    () async {
+                                                  getSearch(value);
+                                                });
+                                              }
 
-                                getSearch(value);
-
-                              
-                              });
-                            }
-
-                            checkTypingTimer?.cancel();
-                            startTimer();
-                                             
-                                             
+                                              checkTypingTimer?.cancel();
+                                              startTimer();
                                             },
                                             onTapOutside: (event) {
                                               setState(() {
@@ -1480,8 +1500,8 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                     ?.unfocus();
                                               });
                                             },
-                                              enableInteractiveSelection: false,
-                                              onTap: () async {
+                                            enableInteractiveSelection: false,
+                                            onTap: () async {
                                               setState(() {
                                                 tabafterfirst = true;
 
@@ -1514,7 +1534,8 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                             // hint style
                                             decoration: InputDecoration(
                                               border: InputBorder.none,
-                                              hintText: "Search for lenders, brands, colour...",
+                                              hintText:
+                                                  "Search for lenders, brands, colour...",
                                               hintStyle: GoogleFonts.lexendDeca(
                                                   color: const Color.fromARGB(
                                                       255, 123, 123, 123),
@@ -1609,7 +1630,8 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                 physics:
                                                     const BouncingScrollPhysics(),
                                                 shrinkWrap: true,
-                                                itemCount: searchDecordedList.length,
+                                                itemCount:
+                                                    searchDecordedList.length,
                                                 itemBuilder: ((context, index) {
                                                   return InkWell(
                                                     onTap: () {
@@ -1637,11 +1659,12 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                             children: [
                                                               Expanded(
                                                                 child: Text(
-                                                                  searchDecordedList[index]
-                                                                          ['word']
+                                                                  searchDecordedList[
+                                                                              index]
+                                                                          [
+                                                                          'word']
                                                                       .toString(),
-
-                                                                      maxLines: 1,
+                                                                  maxLines: 1,
                                                                   style: GoogleFonts.lexendDeca(
                                                                       color: Colors
                                                                           .black,
@@ -1693,10 +1716,9 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                       InkWell(
                                         onTap: currentTab == 0
                                             ? () {
-
-                                               setState(() {
+                                                setState(() {
                                                   tabafterfirst = false;
-                                               });
+                                                });
 
                                                 Navigator.push(
                                                     context,
@@ -1705,13 +1727,9 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                             const ClothesHomeFilter()));
                                               }
                                             : () {
-
-
                                                 setState(() {
                                                   tabafterfirst = false;
-                                               });
-
-      
+                                                });
 
                                                 Navigator.push(
                                                     context,
@@ -1863,10 +1881,9 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                       InkWell(
                                         onTap: currentTab == 0
                                             ? () {
-
                                                 setState(() {
                                                   tabafterfirst = false;
-                                               });
+                                                });
 
                                                 Navigator.push(
                                                     context,
@@ -1875,10 +1892,9 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
                                                             const FilterClothesSort()));
                                               }
                                             : () {
-
                                                 setState(() {
                                                   tabafterfirst = false;
-                                               });
+                                                });
 
                                                 Navigator.push(
                                                     context,
@@ -1942,143 +1958,105 @@ class _BrowserNavState extends State<BrowserNav> with TickerProviderStateMixin {
     );
   }
 
-
-
-
-  void showReviewdialog(String title,String value)
-  {
-
-
-                    showGeneralDialog(
-              
-                context: context,
-                barrierLabel: "Barrier",
-                barrierDismissible: value=="3"? true: false,
-                barrierColor: Colors.black.withOpacity(0.5),
-                transitionDuration: const Duration(milliseconds: 300),
-                pageBuilder: (_, __, ___) {
-                  return WillPopScope(
-                    onWillPop: () async{
-                      return  value=="3"? true: false;
-                    },
-                    child: Center(
-                      child: Container(
+  void showReviewdialog(String title, String value) {
+    showGeneralDialog(
+      context: context,
+      barrierLabel: "Barrier",
+      barrierDismissible: value == "3" ? true : false,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (_, __, ___) {
+        return WillPopScope(
+          onWillPop: () async {
+            return value == "3" ? true : false;
+          },
+          child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                    color: Colors.white, borderRadius: BorderRadius.circular(13)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
                         alignment: Alignment.center,
-                        padding: const EdgeInsets.only(left: 30,right: 20),
-                        height: 180,
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(13)),
-                        child:  Scaffold(
-                          backgroundColor: Colors.transparent,
-                            body: Column( 
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                             Container(
-                              alignment: Alignment.center,
-                              width: 280,
-                               child: Text(
-                                 title,
-                                maxLines: 4,
-                                overflow: TextOverflow.ellipsis
-                               ,textAlign: TextAlign.center,style: GoogleFonts.lexendDeca(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w300,
-                             
-                                color: Colors.black
-                                
-                                ),),
-                             ),
-                  
-                                InkWell(
-                                  onTap: 
-                                  
-                                    value=="2"?
-
-                                      () async
-                                      {
-
-                                         Navigator.pop(context);
-                                         final BottomNavController controller = Get.put(BottomNavController());
-                                         controller.updateIndex(0);
-
-                                            SharedPreferences sharedPreferences =
+                       width: MediaQuery.of(context).size.width,
+                        child: Text(
+                          title,
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.lexendDeca(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.black),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: value == "2"
+                            ? () async {
+                                Navigator.pop(context);
+                                final BottomNavController controller =
+                                    Get.put(BottomNavController());
+                                controller.updateIndex(0);
+                
+                                SharedPreferences sharedPreferences =
                                     await SharedPreferences.getInstance();
                                 sharedPreferences.clear();
-
-                                     Navigator.pushAndRemoveUntil(
+                
+                                Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                         builder: (context) =>    const Home()),
+                                        builder: (context) => const Home()),
                                     (Route<dynamic> route) => false);
-
-                                      }
-                                      
-                                      
-                                      :
-
-                                        value=="3"?
-
-                                        ()
-                                        {
-
-
-                                             Navigator.pop(context);
-
-                                            Navigator.push(context, MaterialPageRoute(builder: (context)=> AccountCreate()));
-
-                                        }
-                                        
-                                        :
-                                  
-                                  
-                                  () {
+                              }
+                            : value == "3"
+                                ? () {
                                     Navigator.pop(context);
-                                
+                
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AccountCreate()));
+                                  }
+                                : () {
+                                    Navigator.pop(context);
                                   },
-                                  child: Container(
-                                    width: 240,
-                                    alignment: Alignment.center,
-                                    margin: const EdgeInsets.only(top: 20),
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.black,
-                                      borderRadius: BorderRadius.circular(5)
-                                    ),
-                                    child:  Text(
-                                      value=="2"?
-
-                                      "LOGOUT":
-
-                                      value=="3"?
-                                      "COMPLETE SIGNUP":
-                                      
-                                      "OK",
-                                    textAlign: TextAlign.center,
-                                   style: GoogleFonts.lexendExa(
-        
-        fontSize: 16,color: Colors.white,fontWeight: FontWeight.w300)),
-                                  ),
-                                ),
-                              
-                          ],
-                        )),
+                        child: Container(
+                          width: 240,
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.only(top: 20),
+                          height: 40,
+                          decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                              value == "2"
+                                  ? "LOGOUT"
+                                  : value == "3"
+                                      ? "COMPLETE SIGNUP"
+                                      : "OK",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.lexendExa(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w300)),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-
-
-
-
-
-
+                    ],
+                  ),
+                ),
+              )),
+        );
+      },
+    );
   }
-
-
 }
 
 class MyTabController extends TabController {

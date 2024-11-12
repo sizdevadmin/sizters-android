@@ -633,7 +633,6 @@ class _RentDetailsState extends State<RentDetails> {
                         child: Column(
                           children: [
 
-
                             // review
 
                       Container(
@@ -1060,8 +1059,6 @@ class _RentDetailsState extends State<RentDetails> {
                       ),
                      
 
-              
-
                      
 
                       // renter review======================================
@@ -1080,9 +1077,6 @@ class _RentDetailsState extends State<RentDetails> {
                                     direction: Axis.vertical,
                                     children: [
                       
-                      
-                            
-                            
                                       Container(
                                       margin: const EdgeInsets.only(left: 15,),
                                       alignment: Alignment.centerLeft,

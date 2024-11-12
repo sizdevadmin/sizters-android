@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/svg.dart';
@@ -1370,6 +1371,8 @@ class _ShoppingPaymentSummeryState extends State<ShoppingPaymentSummery>
 
 
                             orderPunch("");
+
+                            firebaseEventCalled();
                             setState(() {
                             tabController2.animateTo(2);
           
@@ -2304,6 +2307,20 @@ class _ShoppingPaymentSummeryState extends State<ShoppingPaymentSummery>
   }
 
 
+
+  firebaseEventCalled()
+  {
+    
+     try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "OrderPlaceAndroid",
+      );
+    } catch (e) {}
+  }
+
+
   displayPaymentSheet(String paymentId) async {
     try {
       await Stripe.instance.presentPaymentSheet().then((value) {
@@ -2312,16 +2329,21 @@ class _ShoppingPaymentSummeryState extends State<ShoppingPaymentSummery>
       
         //Clear paymentIntent variable after successful payment
          orderPunch(paymentId);
+
         paymentIntent.clear();
+
+        firebaseEventCalled();
+
+      
+
+
         setState(() {
            tabController2.animateTo(2);
           
         });
        
 
-                                                
-
-                                                             
+                                                                                              
 
       
       })

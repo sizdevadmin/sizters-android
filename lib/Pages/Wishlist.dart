@@ -2,6 +2,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -57,6 +58,16 @@ class _WishlistState extends State<Wishlist> {
 // get wishlist data=================================================================
 
   getWishlist() async {
+
+
+
+     try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "WishlistAndroid",
+      );
+    } catch (e) {}
 
     //  dialodShow(context);
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();

@@ -62,6 +62,7 @@ class _BasicLoginInfoState extends State<BasicLoginInfo> {
   Map<dynamic, dynamic> basicInfoList = {};
 
   void BasicInfo() async {
+    
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     dialodShow();
@@ -133,6 +134,12 @@ class _BasicLoginInfoState extends State<BasicLoginInfo> {
         Navigator.pop(context);
 
         }
+
+
+   
+         chatController.onConnectPressed();
+         chatController.getChatListOutside(1, "");
+         pController. getaccontDetails(context,"2024");
 
 
        

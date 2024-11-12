@@ -146,17 +146,124 @@ class _DateSelectorState extends State<DateSelector> {
                   direction: Axis.horizontal,
                   children: [
                     InkWell(
-                      onTap: () {
+                      onTap: ()async {
 
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>  Wishlist()));
+
+                       
+                       
+
+
+                       SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+                     
+                             if(sharedPreferences.getString(SizValue.isLogged).toString()=="null")
+                             {
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(otpNumber: "")));
+
+                             }
+
+
+                                   else if(sharedPreferences.getString(SizValue.isLogged).toString()=="1")
+                             {
+
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString(),productId: widget.id,)));
+
+                             }
+                           
+                             else if(sharedPreferences.getString(SizValue.underReview).toString()=="0"){
+
+                                  showReviewdialog(sharedPreferences.getString(SizValue.underReviewMsg).toString(),sharedPreferences.getString(SizValue.underReview).toString());
+
+                                }
+
+                                else if(sharedPreferences.getString(SizValue.underReview).toString()=="2"){
+
+                                  showReviewdialog(sharedPreferences.getString(SizValue.rejectedReviewMSG).toString(),sharedPreferences.getString(SizValue.underReview).toString());
+
+    
+
+                                }
+                                else if(sharedPreferences.getString(SizValue.underReview).toString()=="3"){
+
+                                  showReviewdialog(sharedPreferences.getString(SizValue.incompleteMessage).toString(),sharedPreferences.getString(SizValue.underReview).toString());
+
+    
+
+                                }
+
+                                else
+                                {
+
+                                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>  Wishlist()));
+
+
+                                }
+
+
+
+
 
                         
                       },
                       child: SvgPicture.asset("assets/images/heart.svg",width: 20,height: 20,)),
                     const SizedBox(width: 20),
                     InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));
+                      onTap: ()async {
+
+
+                       
+                       
+                       SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+                     
+                             if(sharedPreferences.getString(SizValue.isLogged).toString()=="null")
+                             {
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(otpNumber: "")));
+
+                             }
+
+
+                                   else if(sharedPreferences.getString(SizValue.isLogged).toString()=="1")
+                             {
+
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString(),productId: widget.id,)));
+
+                             }
+                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                             {
+
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate(productId: widget.id,)));
+
+                            }
+                             else if(sharedPreferences.getString(SizValue.underReview).toString()=="0"){
+
+                                  showReviewdialog(sharedPreferences.getString(SizValue.underReviewMsg).toString(),sharedPreferences.getString(SizValue.underReview).toString());
+
+                                }
+
+                                else if(sharedPreferences.getString(SizValue.underReview).toString()=="2"){
+
+                                  showReviewdialog(sharedPreferences.getString(SizValue.rejectedReviewMSG).toString(),sharedPreferences.getString(SizValue.underReview).toString());
+
+    
+
+                                }
+                                else if(sharedPreferences.getString(SizValue.underReview).toString()=="3"){
+
+                                  showReviewdialog(sharedPreferences.getString(SizValue.incompleteMessage).toString(),sharedPreferences.getString(SizValue.underReview).toString());
+
+    
+
+                                }
+                                else
+                                {
+                                     Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));
+
+                                }
+
+
+
+
                       },
                       child: SvgPicture.asset("assets/images/bag.svg",width: 20,height: 20,)),
                   ],
@@ -458,14 +565,7 @@ class _DateSelectorState extends State<DateSelector> {
               ),
                     child: Column(
                       children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 8),
-                          width: 35,
-                          height: 2,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: const Color(0xff9D9D9D)),
-                        ),
+                      const SizedBox(height: 5),
 
                         const SizedBox(height: 10),
                         Row(
@@ -755,24 +855,23 @@ class _DateSelectorState extends State<DateSelector> {
                     onWillPop: () async{
                       return  value=="3"? true: false;
                     },
-                    child: Center(
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.only(left: 30,right: 20),
-                        height: 180,
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
+                    child: Scaffold(
+                      backgroundColor: Colors.transparent,
+                        body: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                             margin: const EdgeInsets.symmetric(horizontal: 20),
+                                              decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(13)),
-                        child:  Scaffold(
-                          backgroundColor: Colors.transparent,
-                            body: Column( 
+                            child: Column( 
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
+                              mainAxisSize: MainAxisSize.min,
+                                                children: [
                              Container(
                               alignment: Alignment.center,
-                              width: 280,
+                              width: MediaQuery.of(context).size.width,
                                child: Text(
                                  title,
                                 maxLines: 4,
@@ -785,45 +884,45 @@ class _DateSelectorState extends State<DateSelector> {
                                 
                                 ),),
                              ),
-                  
+                                            
                                 InkWell(
                                   onTap: 
                                   
                                     value=="2"?
-
+                          
                                       () async
                                       {
-
+                          
                                     
-
+                          
                                      Navigator.pop(context);
                                        final BottomNavController controller = Get.put(BottomNavController());
                                    controller.updateIndex(0);
-
+                          
                                             SharedPreferences sharedPreferences =
                                     await SharedPreferences.getInstance();
                                 sharedPreferences.clear();
-
+                          
                                      Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
                                          builder: (context) =>   const Home()),
                                     (Route<dynamic> route) => false);
-
+                          
                                       }
                                       
                                       
                                       :
-
+                          
                                         value=="3"?
-
+                          
                                         ()
                                         {
-
+                          
                                           Navigator.pop(context);
-
+                          
                                             Navigator.push(context, MaterialPageRoute(builder: (context)=> AccountCreate()));
-
+                          
                                         }
                                         
                                         :
@@ -844,24 +943,24 @@ class _DateSelectorState extends State<DateSelector> {
                                     ),
                                     child:  Text(
                                       value=="2"?
-
+                          
                                       "LOGOUT":
-
+                          
                                       value=="3"?
                                       "COMPLETE SIGNUP":
                                       
                                       "OK",
                                     textAlign: TextAlign.center,
                                    style: GoogleFonts.lexendExa(
-        
-        fontSize: 16,color: Colors.white,fontWeight: FontWeight.w300)),
+                                  
+                                  fontSize: 16,color: Colors.white,fontWeight: FontWeight.w300)),
                                   ),
                                 ),
                               
-                          ],
+                                                ],
+                                              ),
+                          ),
                         )),
-                      ),
-                    ),
                   );
                 },
               );

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:accordion/accordion.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
@@ -67,8 +68,18 @@ class _ProductViewState extends State<ProductView> {
   @override
   void initState() {
     filtercontroller.getProductsDetails(context, widget.id);
-
+    firebaseEventCalled();
     super.initState();
+  }
+
+  firebaseEventCalled() {
+    try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "ProductViewAndroid",
+      );
+    } catch (e) {}
   }
 
   // snackbar ==================================================================================================
@@ -220,27 +231,33 @@ class _ProductViewState extends State<ProductView> {
                                                         .getString(
                                                             SizValue.source)
                                                         .toString())));
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.isLogged)
-                                          .toString() ==
-                                      "2") {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AccountCreate()));
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.underReview)
-                                          .toString() ==
-                                      "0") {
-                                    showReviewdialog(
-                                        sharedPreferences
-                                            .getString(SizValue.underReviewMsg)
-                                            .toString(),
-                                        sharedPreferences
-                                            .getString(SizValue.underReview)
-                                            .toString());
-                                  } else if (sharedPreferences
+                                  }
+
+                                  // else if (sharedPreferences
+                                  //         .getString(SizValue.isLogged)
+                                  //         .toString() ==
+                                  //     "2") {
+                                  //   Navigator.push(
+                                  //       context,
+                                  //       MaterialPageRoute(
+                                  //           builder: (context) =>
+                                  //               AccountCreate()));
+                                  // }
+
+                                  // else if (sharedPreferences
+                                  //         .getString(SizValue.underReview)
+                                  //         .toString() ==
+                                  //     "0") {
+                                  //   showReviewdialog(
+                                  //       sharedPreferences
+                                  //           .getString(SizValue.underReviewMsg)
+                                  //           .toString(),
+                                  //       sharedPreferences
+                                  //           .getString(SizValue.underReview)
+                                  //           .toString());
+                                  // }
+                                  
+                                   else if (sharedPreferences
                                           .getString(SizValue.underReview)
                                           .toString() ==
                                       "2") {
@@ -313,7 +330,9 @@ class _ProductViewState extends State<ProductView> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 AccountCreate()));
-                                  } else if (sharedPreferences
+                                  } 
+                                  
+                                  else if (sharedPreferences
                                           .getString(SizValue.underReview)
                                           .toString() ==
                                       "0") {
@@ -324,7 +343,9 @@ class _ProductViewState extends State<ProductView> {
                                         sharedPreferences
                                             .getString(SizValue.underReview)
                                             .toString());
-                                  } else if (sharedPreferences
+                                  } 
+                                  
+                                  else if (sharedPreferences
                                           .getString(SizValue.underReview)
                                           .toString() ==
                                       "2") {
@@ -498,27 +519,31 @@ class _ProductViewState extends State<ProductView> {
                                                         .getString(
                                                             SizValue.source)
                                                         .toString())));
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.isLogged)
-                                          .toString() ==
-                                      "2") {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AccountCreate()));
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.underReview)
-                                          .toString() ==
-                                      "0") {
-                                    showReviewdialog(
-                                        sharedPreferences
-                                            .getString(SizValue.underReviewMsg)
-                                            .toString(),
-                                        sharedPreferences
-                                            .getString(SizValue.underReview)
-                                            .toString());
-                                  } else if (sharedPreferences
+                                  }
+                                  //  else if (sharedPreferences
+                                  //         .getString(SizValue.isLogged)
+                                  //         .toString() ==
+                                  //     "2") {
+                                  //   Navigator.push(
+                                  //       context,
+                                  //       MaterialPageRoute(
+                                  //           builder: (context) =>
+                                  //               AccountCreate()));
+                                  // }
+                                  // else if (sharedPreferences
+                                  //         .getString(SizValue.underReview)
+                                  //         .toString() ==
+                                  //     "0") {
+                                  //   showReviewdialog(
+                                  //       sharedPreferences
+                                  //           .getString(SizValue.underReviewMsg)
+                                  //           .toString(),
+                                  //       sharedPreferences
+                                  //           .getString(SizValue.underReview)
+                                  //           .toString());
+                                  // }
+                                  
+                                   else if (sharedPreferences
                                           .getString(SizValue.underReview)
                                           .toString() ==
                                       "2") {
@@ -568,6 +593,17 @@ class _ProductViewState extends State<ProductView> {
                               ),
                               InkWell(
                                   onTap: () {
+                                 
+                                      try {
+                                        FacebookAppEvents facebookAppEvents =
+                                            FacebookAppEvents();
+
+                                        facebookAppEvents.logEvent(
+                                          name: "ShareClosetAndroid",
+                                        );
+                                      } catch (e) {}
+                                    
+
                                     Share.share(
                                         'Hey ! Check out this listing on Sizters App https://app.siz.ae/product/${widget.id}');
                                   },
@@ -819,27 +855,30 @@ class _ProductViewState extends State<ProductView> {
                                               fromWhere: sharedPreferences
                                                   .getString(SizValue.source)
                                                   .toString())));
-                                } else if (sharedPreferences
-                                        .getString(SizValue.isLogged)
-                                        .toString() ==
-                                    "2") {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              AccountCreate()));
-                                } else if (sharedPreferences
-                                        .getString(SizValue.underReview)
-                                        .toString() ==
-                                    "0") {
-                                  showReviewdialog(
-                                      sharedPreferences
-                                          .getString(SizValue.underReviewMsg)
-                                          .toString(),
-                                      sharedPreferences
-                                          .getString(SizValue.underReview)
-                                          .toString());
-                                } else if (sharedPreferences
+                                }
+                                // else if (sharedPreferences
+                                //         .getString(SizValue.isLogged)
+                                //         .toString() ==
+                                //     "2") {
+                                //   Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //           builder: (context) =>
+                                //               AccountCreate()));
+                                // }
+                                // else if (sharedPreferences
+                                //         .getString(SizValue.underReview)
+                                //         .toString() ==
+                                //     "0") {
+                                //   showReviewdialog(
+                                //       sharedPreferences
+                                //           .getString(SizValue.underReviewMsg)
+                                //           .toString(),
+                                //       sharedPreferences
+                                //           .getString(SizValue.underReview)
+                                //           .toString());
+                                // } 
+                                else if (sharedPreferences
                                         .getString(SizValue.underReview)
                                         .toString() ==
                                     "2") {
@@ -1298,6 +1337,38 @@ class _ProductViewState extends State<ProductView> {
                                   const EdgeInsets.only(left: 20, bottom: 10),
                               alignment: Alignment.centerLeft,
                               child: Text(
+                                "Per day price",
+                                style: GoogleFonts.lexendDeca(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black),
+                              ),
+                            ),
+                            Container(
+                              margin:
+                                  const EdgeInsets.only(right: 20, bottom: 10),
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                controller.productDetailsResponse.isEmpty
+                                    ? ""
+                                    : "AED ${controller.productDetailsResponse["price_1d"]}",
+                                style: GoogleFonts.lexendDeca(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin:
+                                  const EdgeInsets.only(left: 20, bottom: 10),
+                              alignment: Alignment.centerLeft,
+                              child: Text(
                                 "Minimum Rental Period",
                                 style: GoogleFonts.lexendDeca(
                                     fontSize: 15,
@@ -1495,14 +1566,8 @@ class _ProductViewState extends State<ProductView> {
                                                       "is_owner"]
                                                   .toString() ==
                                               "0"
-                                          ? Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => ProfileView(
-                                                      lenderId: controller
-                                                          .productDetailsResponse[
-                                                              "lender_id"]
-                                                          .toString())))
+                                          ? navigateAndDisplaySelection(
+                                              context, widget.id)
                                           : Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -1585,28 +1650,34 @@ class _ProductViewState extends State<ProductView> {
                                                                     SizValue
                                                                         .source)
                                                                 .toString())));
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.isLogged)
-                                              .toString() ==
-                                          "2") {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AccountCreate()));
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.underReview)
-                                              .toString() ==
-                                          "0") {
-                                        showReviewdialog(
-                                            sharedPreferences
-                                                .getString(
-                                                    SizValue.underReviewMsg)
-                                                .toString(),
-                                            sharedPreferences
-                                                .getString(SizValue.underReview)
-                                                .toString());
-                                      } else if (sharedPreferences
+                                      }
+
+                                      //  else if (sharedPreferences
+                                      //         .getString(SizValue.isLogged)
+                                      //         .toString() ==
+                                      //     "2") {
+                                      //   Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //           builder: (context) =>
+                                      //               AccountCreate()));
+                                      // }
+
+                                      // else if (sharedPreferences
+                                      //         .getString(SizValue.underReview)
+                                      //         .toString() ==
+                                      //     "0") {
+                                      //   showReviewdialog(
+                                      //       sharedPreferences
+                                      //           .getString(
+                                      //               SizValue.underReviewMsg)
+                                      //           .toString(),
+                                      //       sharedPreferences
+                                      //           .getString(SizValue.underReview)
+                                      //           .toString());
+                                      // }
+                                      
+                                       else if (sharedPreferences
                                               .getString(SizValue.underReview)
                                               .toString() ==
                                           "2") {
@@ -1668,7 +1739,7 @@ class _ProductViewState extends State<ProductView> {
                                     itemBuilder: (context, index) {
                                       return InkWell(
                                         onTap: () {
-                                          Navigator.push(
+                                          Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
@@ -1701,22 +1772,26 @@ class _ProductViewState extends State<ProductView> {
                           ],
                         ),
 
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 20, top: 20, bottom: 5),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Similar style",
-                            style: GoogleFonts.dmSerifDisplay(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                                color: Colors.black),
+                        Visibility(
+                          visible: controller.similarProducts.isNotEmpty,
+                          child: Container(
+                            margin: const EdgeInsets.only(
+                                left: 20, top: 20, bottom: 5),
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Similar style",
+                              style: GoogleFonts.dmSerifDisplay(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                  color: Colors.black),
+                            ),
                           ),
                         ),
 
                         Container(
                           margin: const EdgeInsets.only(left: 20, top: 10),
-                          height: 145,
+                          height:
+                              controller.similarProducts.isNotEmpty ? 145 : 0,
                           child: ListView.builder(
                               physics: const BouncingScrollPhysics(),
                               scrollDirection: Axis.horizontal,
@@ -1725,7 +1800,7 @@ class _ProductViewState extends State<ProductView> {
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
-                                    Navigator.push(
+                                    Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => ProductView(
@@ -1819,15 +1894,7 @@ class _ProductViewState extends State<ProductView> {
                                           width: 1)),
                                   child: Column(
                                     children: [
-                                      Container(
-                                        margin: const EdgeInsets.only(top: 8),
-                                        width: 35,
-                                        height: 2,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            color: const Color(0xff9D9D9D)),
-                                      ),
+                                      const SizedBox(height: 5),
                                       controller.productDetailsResponse[
                                                       "is_available"]
                                                   .toString() ==
@@ -2189,23 +2256,22 @@ class _ProductViewState extends State<ProductView> {
           onWillPop: () async {
             return value == "3" ? true : false;
           },
-          child: Center(
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(left: 30, right: 20),
-              height: 180,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
+          child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                   margin: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(13)),
-              child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: Column(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         alignment: Alignment.center,
-                        width: 280,
+                        width: MediaQuery.of(context).size.width,
                         child: Text(
                           title,
                           maxLines: 4,
@@ -2222,11 +2288,11 @@ class _ProductViewState extends State<ProductView> {
                             ? () async {
                                 Navigator.pop(context);
                                 controller.updateIndex(0);
-
+                
                                 SharedPreferences sharedPreferences =
                                     await SharedPreferences.getInstance();
                                 sharedPreferences.clear();
-
+                
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
@@ -2236,7 +2302,7 @@ class _ProductViewState extends State<ProductView> {
                             : value == "3"
                                 ? () {
                                     Navigator.pop(context);
-
+                
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -2268,9 +2334,9 @@ class _ProductViewState extends State<ProductView> {
                         ),
                       ),
                     ],
-                  )),
-            ),
-          ),
+                  ),
+                ),
+              )),
         );
       },
     );
@@ -2280,7 +2346,7 @@ class _ProductViewState extends State<ProductView> {
       BuildContext context, String lenderId) async {
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
-    final result = await Navigator.push(
+    final result = await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
           builder: (context) => ProfileView(

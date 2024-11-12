@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -218,9 +219,25 @@ class _MyRentalState extends State<MyRental> {
     }
   }
 
+
+  
+   firebaseEventCalled() {
+    try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "OrderHistoryAndroid",
+      );
+    } catch (e) {}
+  }
+
+
   @override
   initState()
   {
+
+
+    firebaseEventCalled();
      _scrollControllerMRT.addListener(()async  {
     
      
@@ -349,24 +366,27 @@ class _MyRentalState extends State<MyRental> {
                       "My orders".toUpperCase(),
                     style: SizValue.toolbarStyle,
                     )),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  direction: Axis.horizontal,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> Wishlist()));
-                      },
-                      child: SvgPicture.asset("assets/images/heart.svg",width: 20,height: 20,)),
-                    const SizedBox(width: 20),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));
-                      },
-                      child: SvgPicture.asset("assets/images/bag.svg",width: 20,height: 20,)),
-                  ],
-                )
+
+   const SizedBox(width: 30)
+                    
+                // Wrap(
+                //   alignment: WrapAlignment.center,
+                //   crossAxisAlignment: WrapCrossAlignment.center,
+                //   direction: Axis.horizontal,
+                //   children: [
+                //     InkWell(
+                //       onTap: () {
+                //         Navigator.push(context, MaterialPageRoute(builder: (context)=> Wishlist()));
+                //       },
+                //       child: SvgPicture.asset("assets/images/heart.svg",width: 20,height: 20,)),
+                //     const SizedBox(width: 20),
+                //     InkWell(
+                //       onTap: () {
+                //         Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));
+                //       },
+                //       child: SvgPicture.asset("assets/images/bag.svg",width: 20,height: 20,)),
+                //   ],
+                // )
               ],
             ),
           ),

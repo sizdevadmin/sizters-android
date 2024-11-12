@@ -7,6 +7,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +21,6 @@ import 'package:siz/HomePages/AddNav.dart';
 import 'package:siz/LoginSignUp/AccuntCreate.dart';
 import 'package:siz/LoginSignUp/BasicLoginInfo.dart';
 import 'package:siz/LoginSignUp/LoginPage.dart';
-import 'package:siz/Pages/AllOrderRequest.dart';
 import 'package:siz/Pages/Cart.dart';
 import 'package:siz/Pages/Home.dart';
 import 'package:siz/Pages/MyProfile.dart';
@@ -116,9 +116,8 @@ class _HomeNavState extends State<HomeNav> {
     "my5",
     "my6",
   ];
-  
-  
-   Map<String, dynamic> lenderResponse = {};
+
+  Map<String, dynamic> lenderResponse = {};
   List<dynamic> decordedLenderReponse = [];
 
   bool isLoadingMoreMRT = false;
@@ -148,7 +147,7 @@ class _HomeNavState extends State<HomeNav> {
         if (pageno <= 1) {
           setState(() {
             decordedLenderReponse = lenderResponse["user_list"];
-           
+
             isLoadingMoreMRT = false;
             oncesCallMRT = false;
           });
@@ -705,9 +704,14 @@ class _HomeNavState extends State<HomeNav> {
     );
   }
 
+  late FacebookAppEvents facebookAppEvents;
+
   @override
   void initState() {
+    facebookAppEvents = FacebookAppEvents();
+    facebookAppEvents.setAdvertiserTracking(enabled: true);
     checkFirebaseError();
+    firebaseEventCalled("HomePageAndroid");
 
     _scrollControllerMRT.addListener(() async {
       scrollListenerMRT();
@@ -719,28 +723,33 @@ class _HomeNavState extends State<HomeNav> {
     super.initState();
   }
 
+   firebaseEventCalled(String value)
+  {
+
+    try {
+     
+
+      facebookAppEvents.logEvent(
+        name:value
+      );
+    } catch (e) {}
+    
+    
+  }
+
   checkFirebaseError() async {
+    
+
     try {
       final firebaseMessaging = FirebaseMessaging.instance;
       final FCMToken = await firebaseMessaging.getToken();
-     
-
-      if(await controller.getHomeData(context, FCMToken.toString()))
-      {
-
-         getLenders(1);
-
+      if (await controller.getHomeData(context, FCMToken.toString())) {
+        getLenders(1);
       }
     } catch (e) {
-
-       if(await controller.getHomeData(context, ""))
-      {
-
-         getLenders(1);
-
+      if (await controller.getHomeData(context, "")) {
+        getLenders(1);
       }
-
-    
     }
   }
 
@@ -775,1064 +784,798 @@ class _HomeNavState extends State<HomeNav> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: BottomNavController(),
-      builder: (controller) {
-        return SafeArea(
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            body: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Stack(
-                children: [
-                  // top main image========================================================================================
-                  Container(
-                    margin: const EdgeInsets.only(top: 170),
-                    child: Column(
-                      children: [
-                        Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            Image.asset(
-                              "assets/images/homeimage.png",
-                              height: 485,
-                              width: MediaQuery.of(context).size.width,
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 60),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  InkWell(
-                                    onTap: () async {
-                                      // show rental details screen dialog =====================================
+        init: BottomNavController(),
+        builder: (controller) {
+          return SafeArea(
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Stack(
+                  children: [
+                    // top main image========================================================================================
+                    Container(
+                      margin: const EdgeInsets.only(top: 170),
+                      child: Column(
+                        children: [
+                          Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: [
+                              Image.asset(
+                                "assets/images/homeimage.png",
+                                height: 485,
+                                width: MediaQuery.of(context).size.width,
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 60),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                      onTap: () async {
 
-                                      showDialogRental();
-                                    },
-                                    child: Container(
-                                      width: 160,
-                                      alignment: Alignment.center,
-                                      height: 40,
-                                      margin: const EdgeInsets.only(right: 4.5),
-                                      decoration: const BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.all(Radius.circular(7)),
-                                          color: MyColors.themecolor),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text("BECOME A",
-                                              style: GoogleFonts.lexendExa(
-                                                  color: Colors.white,
-                                                  fontSize: 8,
-                                                  letterSpacing: 2,
-                                                  fontWeight: FontWeight.w300)),
-                                          Text("RENTER",
-                                              style: GoogleFonts.lexendExa(
-                                                  letterSpacing: 1,
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w300))
-                                        ],
+
+                                        firebaseEventCalled("Click_Become_A_Renter_Android");
+                                        // show rental details screen dialog =====================================
+
+                                        showDialogRental();
+                                      },
+                                      child: Container(
+                                        width: 160,
+                                        alignment: Alignment.center,
+                                        height: 40,
+                                        margin:
+                                            const EdgeInsets.only(right: 4.5),
+                                        decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(7)),
+                                            color: MyColors.themecolor),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text("BECOME A",
+                                                style: GoogleFonts.lexendExa(
+                                                    color: Colors.white,
+                                                    fontSize: 8,
+                                                    letterSpacing: 2,
+                                                    fontWeight:
+                                                        FontWeight.w300)),
+                                            Text("RENTER",
+                                                style: GoogleFonts.lexendExa(
+                                                    letterSpacing: 1,
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w300))
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  InkWell(
-                                    onTap: () async {
-                                      SharedPreferences sharedPreferences =
-                                          await SharedPreferences.getInstance();
+                                    InkWell(
+                                      onTap: () async {
 
-                                      if (sharedPreferences
-                                              .getString(SizValue.isLogged)
-                                              .toString() ==
-                                          "null") {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoginPage(otpNumber: "")));
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.isLogged)
-                                              .toString() ==
-                                          "1") {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    BasicLoginInfo(
-                                                        fromWhere: sharedPreferences
-                                                            .getString(
-                                                                SizValue.source)
-                                                            .toString())));
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.isLogged)
-                                              .toString() ==
-                                          "2") {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AccountCreate()));
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.underReview)
-                                              .toString() ==
-                                          "0") {
-                                        showReviewdialog(
-                                            sharedPreferences
-                                                .getString(SizValue.underReviewMsg)
-                                                .toString(),
-                                            sharedPreferences
-                                                .getString(SizValue.underReview)
-                                                .toString());
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.underReview)
-                                              .toString() ==
-                                          "2") {
-                                        showReviewdialog(
-                                            sharedPreferences
-                                                .getString(
-                                                    SizValue.rejectedReviewMSG)
-                                                .toString(),
-                                            sharedPreferences
-                                                .getString(SizValue.underReview)
-                                                .toString());
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.underReview)
-                                              .toString() ==
-                                          "3") {
-                                        showReviewdialog(
-                                            sharedPreferences
-                                                .getString(
-                                                    SizValue.incompleteMessage)
-                                                .toString(),
-                                            sharedPreferences
-                                                .getString(SizValue.underReview)
-                                                .toString());
-                                      } else {
+
+                                         firebaseEventCalled("Click_Become_A_Lender_Android");
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => AddNav(
                                                       fromhome: false,
                                                     )));
-                                      }
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.only(
-                                        left: 4.5,
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                          left: 4.5,
+                                        ),
+                                        width: 160,
+                                        alignment: Alignment.center,
+                                        height: 40,
+                                        decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(7)),
+                                            color: Color(0xffF6F5F1)),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text("BECOME A",
+                                                style: GoogleFonts.lexendExa(
+                                                    color: Colors.black,
+                                                    fontSize: 8,
+                                                    letterSpacing: 2,
+                                                    fontWeight:
+                                                        FontWeight.w300)),
+                                            Text("LENDER",
+                                                style: GoogleFonts.lexendExa(
+                                                    color: Colors.black,
+                                                    letterSpacing: 1,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w300))
+                                          ],
+                                        ),
                                       ),
-                                      width: 160,
-                                      alignment: Alignment.center,
-                                      height: 40,
-                                      decoration: const BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.all(Radius.circular(7)),
-                                          color: Color(0xffF6F5F1)),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+
+                          const SizedBox(height: 30),
+
+                          // brands horizontal slide================================================================================
+
+                          ScrollLoopAutoScroll(
+                              //required
+                              scrollDirection: Axis.horizontal, //required
+                              delay: const Duration(seconds: 1),
+                              duration: const Duration(seconds: 300),
+                              gap: 0,
+                              reverseScroll: false,
+                              // duplicateChild: 25,
+                              enableScrollInput: true,
+                              delayAfterScrollInput: const Duration(seconds: 1),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 30,
+                                    margin: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    child: Image.asset(
+                                      "assets/images/brand1.png",
+                                      height: 57,
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 30,
+                                    margin: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    child: Image.asset(
+                                      "assets/images/brand2.png",
+                                      height: 57,
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 30,
+                                    margin: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    child: Image.asset(
+                                      "assets/images/brand3.png",
+                                      height: 57,
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 30,
+                                    margin: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    child: Image.asset(
+                                      "assets/images/brand4.png",
+                                      height: 57,
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 30,
+                                    margin: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    child: Image.asset(
+                                      "assets/images/brand5.png",
+                                      height: 57,
+                                    ),
+                                  ),
+                                ],
+                              )),
+
+                          const SizedBox(height: 20),
+
+                          // Text center rent wardrobe===========================================================================
+
+                          Container(
+                            margin: const EdgeInsets.only(
+                              top: 10,
+                            ),
+                            child: Text(
+                              "Rent their closets",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.dmSerifDisplay(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+
+                          Container(
+                            margin: const EdgeInsets.only(top: 11, bottom: 20),
+                            width: 50,
+                            height: 1,
+                            color: Colors.black,
+                          ),
+
+                          // horizontal list =========================================================================================
+
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 20),
+                            height: 300,
+                            child: Stack(
+                              children: [
+                                ListView.builder(
+                                  controller: _scrollControllerMRT,
+                                  itemCount: decordedLenderReponse.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return InkWell(
+                                      onTap: () async {
+                                        SharedPreferences sharedPreferences =
+                                            await SharedPreferences
+                                                .getInstance();
+
+                                        if (sharedPreferences
+                                                .getString(SizValue.channelId)
+                                                .toString() ==
+                                            decordedLenderReponse[index]["id"]
+                                                .toString()) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const MyProfile()));
+                                        } else {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProfileView(
+                                                        lenderId:
+                                                            decordedLenderReponse[
+                                                                    index]["id"]
+                                                                .toString(),
+                                                      )));
+                                        }
+                                      },
+                                      child: Row(
                                         children: [
-                                          Text("BECOME A",
-                                              style: GoogleFonts.lexendExa(
-                                                  color: Colors.black,
-                                                  fontSize: 8,
-                                                  letterSpacing: 2,
-                                                  fontWeight: FontWeight.w300)),
-                                          Text("LENDER",
-                                              style: GoogleFonts.lexendExa(
-                                                  color: Colors.black,
-                                                  letterSpacing: 1,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w300))
+                                          Visibility(
+                                              visible:
+                                                  index == 0 ? true : false,
+                                              child: const SizedBox(width: 15)),
+                                          Stack(
+                                            alignment: Alignment.bottomRight,
+                                            children: [
+                                              CachedNetworkImage(
+                                                imageUrl:
+                                                    decordedLenderReponse[index]
+                                                            ["profile_img"]
+                                                        .toString(),
+                                                fit: BoxFit.cover,
+                                                width: 200,
+                                                height: 300,
+                                              ),
+                                              Container(
+                                                width: 200,
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                margin: const EdgeInsets.only(
+                                                    bottom: 25),
+                                                child: Text(
+                                                  "${decordedLenderReponse[index]["username"]}",
+                                                  textAlign: TextAlign.center,
+                                                  style: GoogleFonts
+                                                      .dmSerifDisplay(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10, right: 10),
+                                                  margin:
+                                                      const EdgeInsets.all(5),
+                                                  height: 25,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: Colors.white,
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50))),
+                                                  child: Text(
+                                                    decordedLenderReponse[index]
+                                                            ["size"]
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color:
+                                                            MyColors.themecolor,
+                                                        fontSize: 12),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          const SizedBox(width: 10),
                                         ],
                                       ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        // brands horizontal slide================================================================================
-
-                        ScrollLoopAutoScroll(
-                            //required
-                            scrollDirection: Axis.horizontal, //required
-                            delay: const Duration(seconds: 1),
-                            duration: const Duration(seconds: 300),
-                            gap: 0,
-                            reverseScroll: false,
-                            // duplicateChild: 25,
-                            enableScrollInput: true,
-                            delayAfterScrollInput: const Duration(seconds: 1),
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 30,
-                                  margin:
-                                      const EdgeInsets.only(left: 10, right: 10),
-                                  child: Image.asset(
-                                    "assets/images/brand1.png",
-                                    height: 57,
-                                  ),
+                                    );
+                                  },
                                 ),
-                                Container(
-                                  height: 30,
-                                  margin:
-                                      const EdgeInsets.only(left: 10, right: 10),
-                                  child: Image.asset(
-                                    "assets/images/brand2.png",
-                                    height: 57,
+                                Visibility(
+                                  visible: showLazyIndicatorMRT,
+                                  child: Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    bottom: 0,
+                                    child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        alignment: Alignment.centerRight,
+                                        padding:
+                                            const EdgeInsets.only(right: 20),
+                                        margin:
+                                            const EdgeInsets.only(bottom: 10),
+                                        child:
+                                            const CircularProgressIndicator()),
                                   ),
-                                ),
-                                Container(
-                                  height: 30,
-                                  margin:
-                                      const EdgeInsets.only(left: 10, right: 10),
-                                  child: Image.asset(
-                                    "assets/images/brand3.png",
-                                    height: 57,
-                                  ),
-                                ),
-                                Container(
-                                  height: 30,
-                                  margin:
-                                      const EdgeInsets.only(left: 10, right: 10),
-                                  child: Image.asset(
-                                    "assets/images/brand4.png",
-                                    height: 57,
-                                  ),
-                                ),
-                                Container(
-                                  height: 30,
-                                  margin:
-                                      const EdgeInsets.only(left: 10, right: 10),
-                                  child: Image.asset(
-                                    "assets/images/brand5.png",
-                                    height: 57,
-                                  ),
-                                ),
+                                )
                               ],
-                            )),
-
-                        const SizedBox(height: 20),
-
-                        // Text center rent wardrobe===========================================================================
-
-                        Container(
-                          margin: const EdgeInsets.only(
-                            top: 10,
+                            ),
                           ),
-                          child: Text(
-                            "Rent their closets",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSerifDisplay(
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400),
+
+                          // free delivery text and icon ============================================================================
+
+                          InkWell(
+                            onTap: () {
+                              controller.addPages(1);
+                              controller.updateIndex(1);
+                            },
+                            child: Container(
+                                width: 200,
+                                alignment: Alignment.center,
+                                height: 40,
+                                decoration: const BoxDecoration(
+                                    color: MyColors.themecolor,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5))),
+                                // padding: const EdgeInsets.only(
+                                //     left: 20, right: 20, top: 15, bottom: 15),
+                                child: Text("BROWSE CLOSETS",
+                                    style: GoogleFonts.lexendExa(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300))),
                           ),
-                        ),
 
-                        Container(
-                          margin: const EdgeInsets.only(top: 11, bottom: 20),
-                          width: 50,
-                          height: 1,
-                          color: Colors.black,
-                        ),
+                          const SizedBox(height: 30),
 
-                        // horizontal list =========================================================================================
-
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 20),
-                          height: 300,
-                          child: Stack(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              ListView.builder(
-                                controller: _scrollControllerMRT,
-                                itemCount: decordedLenderReponse.length,
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () async {
-                                      SharedPreferences sharedPreferences =
-                                          await SharedPreferences.getInstance();
+                              SizedBox(
+                                width: 115,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/freedelivery.png",
+                                      height: 50,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      "Free delivery and pick up",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.lexendDeca(
+                                          color: const Color.fromARGB(
+                                              255, 89, 89, 89),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w300),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width: 115,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/fitsize.png",
+                                      height: 50,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      "With fit guarantee policy",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.lexendDeca(
+                                          color: const Color.fromARGB(
+                                              255, 89, 89, 89),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w300),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
 
-                                      if (sharedPreferences
-                                              .getString(SizValue.channelId)
-                                              .toString() ==
-                                          decordedLenderReponse[index]["id"]
-                                              .toString()) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const MyProfile()));
-                                      } else {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => ProfileView(
-                                                      lenderId:
-                                                          decordedLenderReponse[
-                                                                  index]["id"]
-                                                              .toString(),
-                                                    )));
-                                      }
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Visibility(
-                                            visible: index == 0 ? true : false,
-                                            child: const SizedBox(width: 15)),
-                                        Stack(
-                                          alignment: Alignment.bottomRight,
+                          const SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              SizedBox(
+                                width: 115,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/verification.png",
+                                      height: 50,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      "With ID verification of sizters",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.lexendDeca(
+                                          color: const Color.fromARGB(
+                                              255, 89, 89, 89),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w300),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width: 110,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/freedry.png",
+                                      height: 50,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      "Free drycleaning or bag spa",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.lexendDeca(
+                                          color: const Color.fromARGB(
+                                              255, 89, 89, 89),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w300),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          // Text most rental ========================================================================================
+
+                          Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            child: Text(
+                              "Most Rented",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.dmSerifDisplay(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+
+                          Container(
+                            margin: const EdgeInsets.only(top: 15, bottom: 15),
+                            width: 50,
+                            height: 1,
+                            color: Colors.black,
+                          ),
+
+                          // horizontal list Most rented 1 =========================================================================================
+
+                          SizedBox(
+                            height: 400,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: controller.productList.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ProductView(
+                                                  index: 0,
+                                                  comesFrom: "",
+                                                  id: controller
+                                                      .productList[index]["id"]
+                                                      .toString(),
+                                                  fromCart: false,
+                                                )));
+                                  },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 18),
+                                        child: Hero(
+                                          tag: controller.productList[index]
+                                                  ["image_id"]
+                                              .toString(),
+                                          child: CachedNetworkImage(
+                                            imageUrl: controller
+                                                .productList[index]["img_url"]
+                                                .toString(),
+                                            fit: BoxFit.cover,
+                                            height: 300,
+                                            width: 200,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 200,
+                                        margin: const EdgeInsets.only(
+                                            top: 5, left: 18),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            CachedNetworkImage(
-                                              imageUrl: decordedLenderReponse[index]
-                                                      ["profile_img"]
-                                                  .toString(),
-                                              fit: BoxFit.cover,
-                                              width: 200,
-                                              height: 300,
-                                            ),
                                             Container(
-                                              width: 200,
-                                              alignment: Alignment.bottomCenter,
-                                              margin:
-                                                  const EdgeInsets.only(bottom: 25),
+                                              alignment: Alignment.centerLeft,
+                                              margin: const EdgeInsets.only(),
                                               child: Text(
-                                                "${decordedLenderReponse[index]["username"]}",
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.dmSerifDisplay(
-                                                  color: Colors.white,
+                                                controller.productList[index]
+                                                        ["brand_name"]
+                                                    .toString(),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style:
+                                                    GoogleFonts.dmSerifDisplay(
+                                                  color: Colors.black,
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 16,
                                                 ),
                                               ),
                                             ),
-                                            Align(
-                                              alignment: Alignment.topRight,
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                padding: const EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                margin: const EdgeInsets.all(5),
-                                                height: 25,
-                                                decoration: const BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius: BorderRadius.all(
-                                                        Radius.circular(50))),
-                                                child: Text(
-                                                  decordedLenderReponse[index]
-                                                          ["size"]
-                                                      .toString(),
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.w400,
-                                                      color: MyColors.themecolor,
-                                                      fontSize: 12),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        const SizedBox(width: 10),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                              Visibility(
-                                visible: showLazyIndicatorMRT,
-                                child: Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  bottom: 0,
-                                  child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      alignment: Alignment.centerRight,
-                                      padding: const EdgeInsets.only(right: 20),
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      child: const CircularProgressIndicator()),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-
-                        // free delivery text and icon ============================================================================
-
-                        InkWell(
-                          onTap: () {
-                            controller.addPages(1);
-                            controller.updateIndex(1);
-                          },
-                          child: Container(
-                              width: 200,
-                              alignment: Alignment.center,
-                              height: 40,
-                              decoration: const BoxDecoration(
-                                  color: MyColors.themecolor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                              // padding: const EdgeInsets.only(
-                              //     left: 20, right: 20, top: 15, bottom: 15),
-                              child: Text("BROWSE CLOSETS",
-                                  style: GoogleFonts.lexendExa(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w300))),
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                              width: 115,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/freedelivery.png",
-                                    height: 50,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "Free delivery and pick up",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.lexendDeca(
-                                        color:
-                                            const Color.fromARGB(255, 89, 89, 89),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 115,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/fitsize.png",
-                                    height: 50,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "With fit guarantee policy",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.lexendDeca(
-                                        color:
-                                            const Color.fromARGB(255, 89, 89, 89),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                              width: 115,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/verification.png",
-                                    height: 50,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "With ID verification of sizters",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.lexendDeca(
-                                        color:
-                                            const Color.fromARGB(255, 89, 89, 89),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 110,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/freedry.png",
-                                    height: 50,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    "Free drycleaning or bag spa",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.lexendDeca(
-                                        color:
-                                            const Color.fromARGB(255, 89, 89, 89),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 15),
-
-                        // Text most rental ========================================================================================
-
-                        Container(
-                          margin: const EdgeInsets.only(top: 20),
-                          child: Text(
-                            "Most Rented",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSerifDisplay(
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ),
-
-                        Container(
-                          margin: const EdgeInsets.only(top: 15, bottom: 15),
-                          width: 50,
-                          height: 1,
-                          color: Colors.black,
-                        ),
-
-                        // horizontal list Most rented 1 =========================================================================================
-
-                        SizedBox(
-                          height: 400,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            itemCount:controller. productList.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ProductView(
-                                                index: 0,
-                                                comesFrom: "",
-                                                id:controller. productList[index]["id"]
-                                                    .toString(),
-                                                fromCart: false,
-                                              )));
-                                },
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 18),
-                                      child: Hero(
-                                        tag:controller. productList[index]["image_id"]
-                                            .toString(),
-                                        child: CachedNetworkImage(
-                                          imageUrl:controller. productList[index]["img_url"]
-                                              .toString(),
-                                          fit: BoxFit.cover,
-                                          height: 300,
-                                          width: 200,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 200,
-                                      margin:
-                                          const EdgeInsets.only(top: 5, left: 18),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            margin: const EdgeInsets.only(),
-                                            child: Text(
-                                            controller.  productList[index]["brand_name"]
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              controller.productList[index]
+                                                      ["title"]
                                                   .toString(),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: GoogleFonts.dmSerifDisplay(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 16,
-                                              ),
+                                              style: GoogleFonts.lexendDeca(
+                                                  color: const Color.fromARGB(
+                                                      255, 83, 83, 83),
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w300),
                                             ),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Text(
-                                          controller.  productList[index]["title"].toString(),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.lexendDeca(
-                                                color: const Color.fromARGB(
-                                                    255, 83, 83, 83),
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w300),
-                                          ),
-                                          const SizedBox(height: 7),
-                                          Text(
-                                          controller.  productList[index]["category_id"]
-                                                        .toString() ==
-                                                    "1"
-                                                ? "RENT AED ${controller.productList[index]["rent_amount"]} | 3 DAYS"
-                                                : "RENT AED ${controller.productList[index]["rent_amount"]} | 8 DAYS",
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.lexendExa(
-                                                color: MyColors.themecolor,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w300),
-                                          ),
-                                          const SizedBox(height: 7),
-                                          Text(
-                                            "Retail AED ${controller.productList[index]["retail_price"]}",
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.lexendDeca(
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                color: const Color.fromARGB(
-                                                    255, 89, 89, 89),
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w300),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-
-                        // Tab bar =============================================================================================
-
-                        Container(
-                          margin: const EdgeInsets.only(
-                            top: 20,
-                          ),
-                          child: Text(
-                            "How it works",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSerifDisplay(
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ),
-
-                        Container(
-                          margin: const EdgeInsets.only(top: 13, bottom: 15),
-                          width: 50,
-                          height: 1,
-                          color: Colors.black,
-                        ),
-
-                        SizedBox(
-                          height: 680,
-                          child: DefaultTabController(
-                            length: 2,
-                            child: Column(
-                              children: <Widget>[
-                                ButtonsTabBar(
-                                  radius: 5,
-                                  backgroundColor: Colors.transparent,
-                                  unselectedBackgroundColor: Colors.transparent,
-                                  unselectedLabelStyle: GoogleFonts.lexendExa(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w300),
-                                  labelStyle: GoogleFonts.lexendExa(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w300),
-                                  tabs: [
-                                    Tab(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        width: 160,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                            color: MyColors.themecolor,
-                                            borderRadius: BorderRadius.circular(5)),
-                                        child: const Text(
-                                          "HOW TO RENT",
-                                          style: TextStyle(
-                                              fontSize: 16, color: Colors.white),
+                                            const SizedBox(height: 7),
+                                            Text(
+                                              controller.productList[index]
+                                                              ["category_id"]
+                                                          .toString() ==
+                                                      "1"
+                                                  ? "RENT AED ${controller.productList[index]["rent_amount"]} | 3 DAYS"
+                                                  : "RENT AED ${controller.productList[index]["rent_amount"]} | 8 DAYS",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.lexendExa(
+                                                  color: MyColors.themecolor,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w300),
+                                            ),
+                                            const SizedBox(height: 7),
+                                            Text(
+                                              "Retail AED ${controller.productList[index]["retail_price"]}",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.lexendDeca(
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                  color: const Color.fromARGB(
+                                                      255, 89, 89, 89),
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w300),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      // text: "",
-                                    ),
-                                    Tab(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        width: 160,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                            color: Colors.black,
-                                            borderRadius: BorderRadius.circular(5)),
-                                        child: const Text(
-                                          "HOW TO LEND",
-                                          style: TextStyle(
-                                              fontSize: 16, color: Colors.white),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+
+                          // Tab bar =============================================================================================
+
+                          Container(
+                            margin: const EdgeInsets.only(
+                              top: 20,
+                            ),
+                            child: Text(
+                              "How it works",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.dmSerifDisplay(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+
+                          Container(
+                            margin: const EdgeInsets.only(top: 13, bottom: 15),
+                            width: 50,
+                            height: 1,
+                            color: Colors.black,
+                          ),
+
+                          SizedBox(
+                            height: 680,
+                            child: DefaultTabController(
+                              length: 2,
+                              child: Column(
+                                children: <Widget>[
+                                  ButtonsTabBar(
+                                    radius: 5,
+                                    backgroundColor: Colors.transparent,
+                                    unselectedBackgroundColor:
+                                        Colors.transparent,
+                                    unselectedLabelStyle: GoogleFonts.lexendExa(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300),
+                                    labelStyle: GoogleFonts.lexendExa(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300),
+                                    tabs: [
+                                      Tab(
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          width: 160,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                              color: MyColors.themecolor,
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          child: const Text(
+                                            "HOW TO RENT",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white),
+                                          ),
                                         ),
+                                        // text: "",
                                       ),
-                                      // text: "",
-                                    ),
-                                  ],
-                                ),
-                                Expanded(
-                                  child: TabBarView(
-                                    children: <Widget>[
-                                      // Tap one ===============================================================================================
-                                      Column(
-                                        children: [
-                                          const SizedBox(height: 20),
-
-                                          // step 1
-                                          Stack(
-                                            children: [
-                                              Container(
-                                                  height: 130,
-                                                  margin: const EdgeInsets.only(
-                                                      left: 55, right: 15),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 1),
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          const BorderRadius.only(
-                                                              bottomRight:
-                                                                  Radius.circular(
-                                                                      60),
-                                                              topLeft:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              topRight:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              bottomLeft:
-                                                                  Radius.circular(
-                                                                      10)),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Color.fromARGB(
-                                                                255, 211, 211, 211),
-                                                            blurRadius: 1,
-                                                            offset: Offset(0.0, 4))
-                                                      ])),
-                                              Container(
-                                                height: 130,
-                                                margin: const EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                child: Row(
-                                                  children: [
-                                                    const SizedBox(width: 5),
-                                                    Container(
-                                                      width: 90,
-                                                      height: 90,
-                                                      alignment: Alignment.center,
-                                                      decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: const Color(
-                                                              0xffF5F6F1),
-                                                          border: Border.all(
-                                                              color: Colors.black,
-                                                              width: 1)),
-                                                      child: Image.asset(
-                                                        "assets/images/rentfirst.png",
-                                                        width: 50,
-                                                        height: 50,
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Container(
-                                                          margin:
-                                                              const EdgeInsets.only(
-                                                                  right: 10,
-                                                                  left: 15),
-                                                          child: SizedBox(
-                                                            width: 249,
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  "Browse",
-                                                                  style: GoogleFonts.dmSerifDisplay(
-                                                                      color: MyColors
-                                                                          .themecolor,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w300),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 3),
-                                                                Text(
-                                                                  "Browse the most stylish closets on the\napp (you can filter items by size,\navailability, occasion, brand, and more!)\n\nPick a style you love from your sizter’s closet.",
-                                                                  style: GoogleFonts.lexendDeca(
-                                                                      color: const Color
-                                                                          .fromARGB(
-                                                                          255,
-                                                                          98,
-                                                                          98,
-                                                                          98),
-                                                                      fontSize:
-                                                                          10.5,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w300),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 5),
-                                                              ],
-                                                            ),
-                                                          )),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
+                                      Tab(
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          width: 160,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                              color: Colors.black,
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          child: const Text(
+                                            "HOW TO LEND",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white),
                                           ),
+                                        ),
+                                        // text: "",
+                                      ),
+                                    ],
+                                  ),
+                                  Expanded(
+                                    child: TabBarView(
+                                      children: <Widget>[
+                                        // Tap one ===============================================================================================
+                                        Column(
+                                          children: [
+                                            const SizedBox(height: 20),
 
-                                          const SizedBox(height: 20),
-
-                                          // step 2
-                                          Stack(
-                                            children: [
-                                              Container(
+                                            // step 1
+                                            Stack(
+                                              children: [
+                                                Container(
+                                                    height: 130,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 55,
+                                                            right: 15),
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                        color: Colors.white,
+                                                        borderRadius: const BorderRadius
+                                                            .only(
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    60),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10),
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    10)),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      211,
+                                                                      211,
+                                                                      211),
+                                                              blurRadius: 1,
+                                                              offset: Offset(
+                                                                  0.0, 4))
+                                                        ])),
+                                                Container(
                                                   height: 130,
                                                   margin: const EdgeInsets.only(
-                                                      right: 55, left: 15),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 1),
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          const BorderRadius.only(
-                                                              bottomLeft:
-                                                                  Radius.circular(
-                                                                      60),
-                                                              topLeft:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              topRight:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              bottomRight:
-                                                                  Radius.circular(
-                                                                      10)),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Color.fromARGB(
-                                                                255, 211, 211, 211),
-                                                            blurRadius: 1,
-                                                            offset: Offset(0.0, 4))
-                                                      ])),
-                                              Container(
-                                                height: 130,
-                                                margin: const EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Flexible(
-                                                          child: Container(
-                                                              margin:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      right: 10,
-                                                                      left: 10),
-                                                              child: SizedBox(
-                                                                width:
-                                                                    MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width,
-                                                                child: Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .end,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .end,
-                                                                  children: [
-                                                                    Text(
-                                                                      "Request rental",
-                                                                      style: GoogleFonts.dmSerifDisplay(
-                                                                          color: MyColors
-                                                                              .themecolor,
-                                                                          fontWeight:
-                                                                              FontWeight
-                                                                                  .w300),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height: 5),
-                                                                    Text(
-                                                                      "Choose dates, send your rental request,\nand communicate securely with the\n lender through our messaging system.\n\nYou will be charged once it’s accepted.",
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .end,
-                                                                      style: GoogleFonts.lexendDeca(
-                                                                          color: const Color
-                                                                              .fromARGB(
-                                                                              255,
-                                                                              98,
-                                                                              98,
-                                                                              98),
-                                                                          fontSize:
-                                                                              10.5,
-                                                                          fontWeight:
-                                                                              FontWeight
-                                                                                  .w300),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height: 5),
-                                                                  ],
-                                                                ),
-                                                              )),
-                                                        ),
-                                                        const SizedBox(width: 5),
-                                                        Container(
-                                                          width: 90,
-                                                          height: 90,
-                                                          alignment:
-                                                              Alignment.center,
-                                                          decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              color: const Color(
-                                                                  0xffF5F6F1),
-                                                              border: Border.all(
-                                                                  color:
-                                                                      Colors.black,
-                                                                  width: 1)),
-                                                          child: Image.asset(
-                                                            "assets/images/rentsecond.png",
-                                                            width: 50,
-                                                            height: 50,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(width: 5)
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-
-                                          // step 3
-
-                                          const SizedBox(height: 20),
-                                          Stack(
-                                            children: [
-                                              Container(
-                                                  height: 130,
-                                                  margin: const EdgeInsets.only(
-                                                      left: 55, right: 15),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 1),
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          const BorderRadius.only(
-                                                              bottomRight:
-                                                                  Radius.circular(
-                                                                      60),
-                                                              topLeft:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              topRight:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              bottomLeft:
-                                                                  Radius.circular(
-                                                                      10)),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Color.fromARGB(
-                                                                255, 211, 211, 211),
-                                                            blurRadius: 1,
-                                                            offset: Offset(0.0, 4))
-                                                      ])),
-                                              Container(
-                                                height: 130,
-                                                margin: const EdgeInsets.only(
-                                                    left: 15, right: 10),
-                                                child: SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
+                                                      left: 10, right: 10),
                                                   child: Row(
                                                     children: [
+                                                      const SizedBox(width: 5),
                                                       Container(
                                                         width: 90,
                                                         height: 90,
-                                                        alignment: Alignment.center,
+                                                        alignment:
+                                                            Alignment.center,
                                                         decoration: BoxDecoration(
-                                                            shape: BoxShape.circle,
+                                                            shape:
+                                                                BoxShape.circle,
                                                             color: const Color(
                                                                 0xffF5F6F1),
                                                             border: Border.all(
-                                                                color: Colors.black,
+                                                                color: Colors
+                                                                    .black,
                                                                 width: 1)),
                                                         child: Image.asset(
-                                                          "assets/images/rentthird.png",
+                                                          "assets/images/rentfirst.png",
                                                           width: 50,
                                                           height: 50,
                                                         ),
                                                       ),
                                                       Flexible(
                                                         child: Container(
-                                                            margin: const EdgeInsets
-                                                                .only(
-                                                                right: 15,
-                                                                left: 15),
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    right: 10,
+                                                                    left: 15),
                                                             child: SizedBox(
-                                                              width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
+                                                              width: 249,
                                                               child: Column(
                                                                 mainAxisAlignment:
                                                                     MainAxisAlignment
@@ -1842,18 +1585,18 @@ class _HomeNavState extends State<HomeNav> {
                                                                         .start,
                                                                 children: [
                                                                   Text(
-                                                                    "Wear",
+                                                                    "Browse",
                                                                     style: GoogleFonts.dmSerifDisplay(
                                                                         color: MyColors
                                                                             .themecolor,
                                                                         fontWeight:
-                                                                            FontWeight
-                                                                                .w300),
+                                                                            FontWeight.w300),
                                                                   ),
                                                                   const SizedBox(
-                                                                      height: 3),
+                                                                      height:
+                                                                          3),
                                                                   Text(
-                                                                    "Receive your item and enjoy your outfit!\n\nWhen your rental period is up, just place your item back in the garment bag they came in. We'll handle the pick up and dry cleaning.",
+                                                                    "Browse the most stylish closets on the\napp (you can filter items by size,\navailability, occasion, brand, and more!)\n\nPick a style you love from your sizter’s closet.",
                                                                     style: GoogleFonts.lexendDeca(
                                                                         color: const Color
                                                                             .fromARGB(
@@ -1864,11 +1607,11 @@ class _HomeNavState extends State<HomeNav> {
                                                                         fontSize:
                                                                             10.5,
                                                                         fontWeight:
-                                                                            FontWeight
-                                                                                .w300),
+                                                                            FontWeight.w300),
                                                                   ),
                                                                   const SizedBox(
-                                                                      height: 5),
+                                                                      height:
+                                                                          5),
                                                                 ],
                                                               ),
                                                             )),
@@ -1876,187 +1619,338 @@ class _HomeNavState extends State<HomeNav> {
                                                     ],
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
+                                              ],
+                                            ),
 
-                                          const SizedBox(height: 20),
+                                            const SizedBox(height: 20),
 
-                                          // step 4
-                                          Stack(
-                                            children: [
-                                              Container(
+                                            // step 2
+                                            Stack(
+                                              children: [
+                                                Container(
+                                                    height: 130,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 55,
+                                                            left: 15),
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                        color: Colors.white,
+                                                        borderRadius: const BorderRadius
+                                                            .only(
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    60),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10),
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    10)),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      211,
+                                                                      211,
+                                                                      211),
+                                                              blurRadius: 1,
+                                                              offset: Offset(
+                                                                  0.0, 4))
+                                                        ])),
+                                                Container(
                                                   height: 130,
                                                   margin: const EdgeInsets.only(
-                                                      right: 55, left: 15),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 1),
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          const BorderRadius.only(
-                                                              bottomLeft:
-                                                                  Radius.circular(
-                                                                      60),
-                                                              topLeft:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              topRight:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              bottomRight:
-                                                                  Radius.circular(
-                                                                      10)),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Color.fromARGB(
-                                                                255, 211, 211, 211),
-                                                            blurRadius: 1,
-                                                            offset: Offset(0.0, 4))
-                                                      ])),
-                                              Container(
-                                                height: 130,
-                                                margin: const EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                padding: const EdgeInsets.only(
-                                                    top: 10, bottom: 10),
-                                                child: SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  child: Row(
+                                                      left: 10, right: 10),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     children: [
-                                                      Flexible(
-                                                        child: Container(
-                                                            margin: const EdgeInsets
-                                                                .only(
-                                                                right: 10,
-                                                                left: 10),
-                                                            child: SizedBox(
-                                                              width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
-                                                              child: Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  Text(
-                                                                    "Rate and review",
-                                                                    style: GoogleFonts.dmSerifDisplay(
-                                                                        color: MyColors
-                                                                            .themecolor,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w300),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                      height: 3),
-                                                                  Text(
-                                                                    "After returning your rental, share your honest feedback with fellow Sizters and flaunt your fabulous look on socials.\n\nDon't forget to tag @sizters.app",
-                                                                    textAlign:
-                                                                        TextAlign
+                                                      Row(
+                                                        children: [
+                                                          Flexible(
+                                                            child: Container(
+                                                                margin:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        left:
+                                                                            10),
+                                                                child: SizedBox(
+                                                                  width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                                  child: Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
                                                                             .end,
-                                                                    style: GoogleFonts.lexendDeca(
-                                                                        color: const Color
-                                                                            .fromARGB(
-                                                                            255,
-                                                                            98,
-                                                                            98,
-                                                                            98),
-                                                                        fontSize:
-                                                                            10.5,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w300),
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .end,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Request rental",
+                                                                        style: GoogleFonts.dmSerifDisplay(
+                                                                            color:
+                                                                                MyColors.themecolor,
+                                                                            fontWeight: FontWeight.w300),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              5),
+                                                                      Text(
+                                                                        "Choose dates, send your rental request,\nand communicate securely with the\n lender through our messaging system.\n\nYou will be charged once it’s accepted.",
+                                                                        textAlign:
+                                                                            TextAlign.end,
+                                                                        style: GoogleFonts.lexendDeca(
+                                                                            color: const Color.fromARGB(
+                                                                                255,
+                                                                                98,
+                                                                                98,
+                                                                                98),
+                                                                            fontSize:
+                                                                                10.5,
+                                                                            fontWeight:
+                                                                                FontWeight.w300),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              5),
+                                                                    ],
                                                                   ),
-                                                                  const SizedBox(
-                                                                      height: 5),
-                                                                ],
-                                                              ),
-                                                            )),
-                                                      ),
-                                                      Container(
-                                                        width: 90,
-                                                        height: 90,
-                                                        alignment: Alignment.center,
-                                                        decoration: BoxDecoration(
-                                                            shape: BoxShape.circle,
-                                                            color: const Color(
-                                                                0xffF5F6F1),
-                                                            border: Border.all(
-                                                                color: Colors.black,
-                                                                width: 1)),
-                                                        child: Image.asset(
-                                                          "assets/images/rentfour.png",
-                                                          width: 50,
-                                                          height: 50,
-                                                        ),
+                                                                )),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 5),
+                                                          Container(
+                                                            width: 90,
+                                                            height: 90,
+                                                            alignment: Alignment
+                                                                .center,
+                                                            decoration: BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                color: const Color(
+                                                                    0xffF5F6F1),
+                                                                border: Border.all(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    width: 1)),
+                                                            child: Image.asset(
+                                                              "assets/images/rentsecond.png",
+                                                              width: 50,
+                                                              height: 50,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 5)
+                                                        ],
                                                       ),
                                                     ],
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                              ],
+                                            ),
 
-                                      // Tap 2 ===============================================================================================
-                                      Column(
-                                        children: [
-                                          const SizedBox(height: 20),
+                                            // step 3
 
-                                          // step 1
-
-                                          Stack(
-                                            children: [
-                                              Container(
+                                            const SizedBox(height: 20),
+                                            Stack(
+                                              children: [
+                                                Container(
+                                                    height: 130,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 55,
+                                                            right: 15),
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                        color: Colors.white,
+                                                        borderRadius: const BorderRadius
+                                                            .only(
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    60),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10),
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    10)),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      211,
+                                                                      211,
+                                                                      211),
+                                                              blurRadius: 1,
+                                                              offset: Offset(
+                                                                  0.0, 4))
+                                                        ])),
+                                                Container(
                                                   height: 130,
                                                   margin: const EdgeInsets.only(
-                                                      right: 55, left: 15),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 1),
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          const BorderRadius.only(
-                                                              bottomLeft:
-                                                                  Radius.circular(
-                                                                      60),
-                                                              topLeft:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              topRight:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              bottomRight:
-                                                                  Radius.circular(
-                                                                      10)),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Color.fromARGB(
-                                                                255, 211, 211, 211),
-                                                            blurRadius: 1,
-                                                            offset: Offset(0.0, 4))
-                                                      ])),
-                                              Container(
-                                                height: 130,
-                                                margin: const EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Row(
+                                                      left: 15, right: 10),
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    child: Row(
+                                                      children: [
+                                                        Container(
+                                                          width: 90,
+                                                          height: 90,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          decoration: BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              color: const Color(
+                                                                  0xffF5F6F1),
+                                                              border: Border.all(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  width: 1)),
+                                                          child: Image.asset(
+                                                            "assets/images/rentthird.png",
+                                                            width: 50,
+                                                            height: 50,
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          child: Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      right: 15,
+                                                                      left: 15),
+                                                              child: SizedBox(
+                                                                width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Wear",
+                                                                      style: GoogleFonts.dmSerifDisplay(
+                                                                          color: MyColors
+                                                                              .themecolor,
+                                                                          fontWeight:
+                                                                              FontWeight.w300),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            3),
+                                                                    Text(
+                                                                      "Receive your item and enjoy your outfit!\n\nWhen your rental period is up, just place your item back in the garment bag they came in. We'll handle the pick up and dry cleaning.",
+                                                                      style: GoogleFonts.lexendDeca(
+                                                                          color: const Color
+                                                                              .fromARGB(
+                                                                              255,
+                                                                              98,
+                                                                              98,
+                                                                              98),
+                                                                          fontSize:
+                                                                              10.5,
+                                                                          fontWeight:
+                                                                              FontWeight.w300),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            5),
+                                                                  ],
+                                                                ),
+                                                              )),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+
+                                            const SizedBox(height: 20),
+
+                                            // step 4
+                                            Stack(
+                                              children: [
+                                                Container(
+                                                    height: 130,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 55,
+                                                            left: 15),
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                        color: Colors.white,
+                                                        borderRadius: const BorderRadius
+                                                            .only(
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    60),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10),
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    10)),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      211,
+                                                                      211,
+                                                                      211),
+                                                              blurRadius: 1,
+                                                              offset: Offset(
+                                                                  0.0, 4))
+                                                        ])),
+                                                Container(
+                                                  height: 130,
+                                                  margin: const EdgeInsets.only(
+                                                      left: 10, right: 10),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10, bottom: 10),
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    child: Row(
                                                       children: [
                                                         Flexible(
                                                           child: Container(
@@ -2066,275 +1960,31 @@ class _HomeNavState extends State<HomeNav> {
                                                                       right: 10,
                                                                       left: 10),
                                                               child: SizedBox(
-                                                                width:
-                                                                    MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width,
+                                                                width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
                                                                 child: Column(
                                                                   mainAxisAlignment:
                                                                       MainAxisAlignment
-                                                                          .end,
+                                                                          .center,
                                                                   crossAxisAlignment:
                                                                       CrossAxisAlignment
                                                                           .end,
                                                                   children: [
                                                                     Text(
-                                                                      "List",
+                                                                      "Rate and review",
                                                                       style: GoogleFonts.dmSerifDisplay(
                                                                           color: MyColors
                                                                               .themecolor,
                                                                           fontWeight:
-                                                                              FontWeight
-                                                                                  .w400),
+                                                                              FontWeight.w300),
                                                                     ),
                                                                     const SizedBox(
-                                                                        height: 3),
+                                                                        height:
+                                                                            3),
                                                                     Text(
-                                                                        "You can opt for a managed closet by siz:\nsend us items to store, list, and lend.\n\nOr list an item in under 2 minutes,\nkeep and manage your own rental\nlistings through our platform.",
-                                                                        textAlign:
-                                                                            TextAlign
-                                                                                .end,
-                                                                        style: GoogleFonts.lexendDeca(
-                                                                            color: const Color
-                                                                                .fromARGB(
-                                                                                255,
-                                                                                98,
-                                                                                98,
-                                                                                98),
-                                                                            fontSize:
-                                                                                10.5,
-                                                                            fontWeight:
-                                                                                FontWeight.w300)),
-                                                                    const SizedBox(
-                                                                        height: 5),
-                                                                  ],
-                                                                ),
-                                                              )),
-                                                        ),
-                                                        Container(
-                                                          width: 90,
-                                                          height: 90,
-                                                          alignment:
-                                                              Alignment.center,
-                                                          decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                              color: const Color(
-                                                                  0xffF5F6F1),
-                                                              border: Border.all(
-                                                                  color:
-                                                                      Colors.black,
-                                                                  width: 1)),
-                                                          child: Image.asset(
-                                                            "assets/images/lendfirst.png",
-                                                            width: 50,
-                                                            height: 50,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-
-                                          const SizedBox(height: 20),
-
-                                          // step 2
-
-                                          Stack(
-                                            children: [
-                                              Container(
-                                                  height: 130,
-                                                  margin: const EdgeInsets.only(
-                                                      left: 55, right: 15),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 1),
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          const BorderRadius.only(
-                                                              bottomRight:
-                                                                  Radius.circular(
-                                                                      60),
-                                                              topLeft:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              topRight:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              bottomLeft:
-                                                                  Radius.circular(
-                                                                      10)),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Color.fromARGB(
-                                                                255, 211, 211, 211),
-                                                            blurRadius: 1,
-                                                            offset: Offset(0.0, 4))
-                                                      ])),
-                                              Container(
-                                                height: 130,
-                                                margin: const EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                child: Row(
-                                                  children: [
-                                                    const SizedBox(width: 5),
-                                                    Container(
-                                                      width: 90,
-                                                      height: 90,
-                                                      alignment: Alignment.center,
-                                                      decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: const Color(
-                                                              0xffF5F6F1),
-                                                          border: Border.all(
-                                                              color: Colors.black,
-                                                              width: 1)),
-                                                      child: Image.asset(
-                                                        "assets/images/lendseond.png",
-                                                        width: 50,
-                                                        height: 50,
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Container(
-                                                          margin:
-                                                              const EdgeInsets.only(
-                                                                  right: 10,
-                                                                  left: 15),
-                                                          child: SizedBox(
-                                                            width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width,
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  "Approve rental",
-                                                                  style: GoogleFonts.dmSerifDisplay(
-                                                                      color: MyColors
-                                                                          .themecolor,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w400),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 3),
-                                                                Text(
-                                                                  "You have the choice to approve or decline\nall rental request that you receive.\n\nCommunicate directly with our team or\nyour potential renter via our secure\nmessaging system.",
-                                                                  style: GoogleFonts.lexendDeca(
-                                                                      color: const Color
-                                                                          .fromARGB(
-                                                                          255,
-                                                                          98,
-                                                                          98,
-                                                                          98),
-                                                                      fontSize:
-                                                                          10.5,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w300),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 5),
-                                                              ],
-                                                            ),
-                                                          )),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-
-                                          // step 3
-
-                                          const SizedBox(height: 20),
-
-                                          Stack(
-                                            children: [
-                                              Container(
-                                                  height: 130,
-                                                  margin: const EdgeInsets.only(
-                                                      right: 55, left: 15),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 1),
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          const BorderRadius.only(
-                                                              bottomLeft:
-                                                                  Radius.circular(
-                                                                      60),
-                                                              topLeft:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              topRight:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              bottomRight:
-                                                                  Radius.circular(
-                                                                      10)),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Color.fromARGB(
-                                                                255, 211, 211, 211),
-                                                            blurRadius: 1,
-                                                            offset: Offset(0.0, 4))
-                                                      ])),
-                                              Container(
-                                                height: 130,
-                                                margin: const EdgeInsets.only(
-                                                    left: 10, right: 15),
-                                                child: SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  child: Row(
-                                                    children: [
-                                                      Flexible(
-                                                        child: Container(
-                                                            margin: const EdgeInsets
-                                                                .only(
-                                                                right: 10,
-                                                                left: 10),
-                                                            child: SizedBox(
-                                                              width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width,
-                                                              child: Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .end,
-                                                                children: [
-                                                                  Text(
-                                                                    "Ship",
-                                                                    style: GoogleFonts.dmSerifDisplay(
-                                                                        color: MyColors
-                                                                            .themecolor,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                      height: 3),
-                                                                  Text(
-                                                                      "We take care of everything from pick-up\nto return once dry cleaned for your\nhassle-free lending.\n\nAll you have to do is approve rental\nrequest!",
+                                                                      "After returning your rental, share your honest feedback with fellow Sizters and flaunt your fabulous look on socials.\n\nDon't forget to tag @sizters.app",
                                                                       textAlign:
                                                                           TextAlign
                                                                               .end,
@@ -2348,131 +1998,283 @@ class _HomeNavState extends State<HomeNav> {
                                                                           fontSize:
                                                                               10.5,
                                                                           fontWeight:
-                                                                              FontWeight
-                                                                                  .w300)),
-                                                                  const SizedBox(
-                                                                      height: 5),
-                                                                ],
-                                                              ),
-                                                            )),
-                                                      ),
-                                                      const SizedBox(width: 5),
-                                                      Container(
-                                                        width: 90,
-                                                        height: 90,
-                                                        alignment: Alignment.center,
-                                                        decoration: BoxDecoration(
-                                                            shape: BoxShape.circle,
-                                                            color: const Color(
-                                                                0xffF5F6F1),
-                                                            border: Border.all(
-                                                                color: Colors.black,
-                                                                width: 1)),
-                                                        child: Image.asset(
-                                                          "assets/images/lendthird.png",
-                                                          width: 50,
-                                                          height: 50,
+                                                                              FontWeight.w300),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            5),
+                                                                  ],
+                                                                ),
+                                                              )),
                                                         ),
+                                                        Container(
+                                                          width: 90,
+                                                          height: 90,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          decoration: BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              color: const Color(
+                                                                  0xffF5F6F1),
+                                                              border: Border.all(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  width: 1)),
+                                                          child: Image.asset(
+                                                            "assets/images/rentfour.png",
+                                                            width: 50,
+                                                            height: 50,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+
+                                        // Tap 2 ===============================================================================================
+                                        Column(
+                                          children: [
+                                            const SizedBox(height: 20),
+
+                                            // step 1
+
+                                            Stack(
+                                              children: [
+                                                Container(
+                                                    height: 130,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 55,
+                                                            left: 15),
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                        color: Colors.white,
+                                                        borderRadius: const BorderRadius
+                                                            .only(
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    60),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10),
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    10)),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      211,
+                                                                      211,
+                                                                      211),
+                                                              blurRadius: 1,
+                                                              offset: Offset(
+                                                                  0.0, 4))
+                                                        ])),
+                                                Container(
+                                                  height: 130,
+                                                  margin: const EdgeInsets.only(
+                                                      left: 10, right: 10),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Flexible(
+                                                            child: Container(
+                                                                margin:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        left:
+                                                                            10),
+                                                                child: SizedBox(
+                                                                  width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                                  child: Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .end,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .end,
+                                                                    children: [
+                                                                      Text(
+                                                                        "List",
+                                                                        style: GoogleFonts.dmSerifDisplay(
+                                                                            color:
+                                                                                MyColors.themecolor,
+                                                                            fontWeight: FontWeight.w400),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              3),
+                                                                      Text(
+                                                                          "You can opt for a managed closet by siz:\nsend us items to store, list, and lend.\n\nOr list an item in under 2 minutes,\nkeep and manage your own rental\nlistings through our platform.",
+                                                                          textAlign: TextAlign
+                                                                              .end,
+                                                                          style: GoogleFonts.lexendDeca(
+                                                                              color: const Color.fromARGB(255, 98, 98, 98),
+                                                                              fontSize: 10.5,
+                                                                              fontWeight: FontWeight.w300)),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              5),
+                                                                    ],
+                                                                  ),
+                                                                )),
+                                                          ),
+                                                          Container(
+                                                            width: 90,
+                                                            height: 90,
+                                                            alignment: Alignment
+                                                                .center,
+                                                            decoration: BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                color: const Color(
+                                                                    0xffF5F6F1),
+                                                                border: Border.all(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    width: 1)),
+                                                            child: Image.asset(
+                                                              "assets/images/lendfirst.png",
+                                                              width: 50,
+                                                              height: 50,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ],
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
+                                              ],
+                                            ),
 
-                                          const SizedBox(height: 20),
+                                            const SizedBox(height: 20),
 
-                                          // step 4
+                                            // step 2
 
-                                          Stack(
-                                            children: [
-                                              Container(
+                                            Stack(
+                                              children: [
+                                                Container(
+                                                    height: 130,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 55,
+                                                            right: 15),
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                        color: Colors.white,
+                                                        borderRadius: const BorderRadius
+                                                            .only(
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    60),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10),
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    10)),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      211,
+                                                                      211,
+                                                                      211),
+                                                              blurRadius: 1,
+                                                              offset: Offset(
+                                                                  0.0, 4))
+                                                        ])),
+                                                Container(
                                                   height: 130,
                                                   margin: const EdgeInsets.only(
-                                                      left: 55, right: 15),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors.black,
-                                                          width: 1),
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          const BorderRadius.only(
-                                                              bottomRight:
-                                                                  Radius.circular(
-                                                                      60),
-                                                              topLeft:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              topRight:
-                                                                  Radius.circular(
-                                                                      10),
-                                                              bottomLeft:
-                                                                  Radius.circular(
-                                                                      10)),
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            color: Color.fromARGB(
-                                                                255, 211, 211, 211),
-                                                            blurRadius: 1,
-                                                            offset: Offset(0.0, 4))
-                                                      ])),
-                                              Container(
-                                                height: 130,
-                                                margin: const EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                child: Row(
-                                                  children: [
-                                                    const SizedBox(width: 5),
-                                                    Container(
-                                                      width: 90,
-                                                      height: 90,
-                                                      alignment: Alignment.center,
-                                                      decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: const Color(
-                                                              0xffF5F6F1),
-                                                          border: Border.all(
-                                                              color: Colors.black,
-                                                              width: 1)),
-                                                      child: Image.asset(
-                                                        "assets/images/lendfour.png",
-                                                        width: 50,
-                                                        height: 50,
+                                                      left: 10, right: 10),
+                                                  child: Row(
+                                                    children: [
+                                                      const SizedBox(width: 5),
+                                                      Container(
+                                                        width: 90,
+                                                        height: 90,
+                                                        alignment:
+                                                            Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            color: const Color(
+                                                                0xffF5F6F1),
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .black,
+                                                                width: 1)),
+                                                        child: Image.asset(
+                                                          "assets/images/lendseond.png",
+                                                          width: 50,
+                                                          height: 50,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Container(
-                                                          margin:
-                                                              const EdgeInsets.only(
-                                                                  right: 10,
-                                                                  left: 15),
-                                                          child: SizedBox(
-                                                            width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width,
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  "Get paid and review",
-                                                                  style: GoogleFonts.dmSerifDisplay(
-                                                                      color: MyColors
-                                                                          .themecolor,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w400),
-                                                                ),
-                                                                const SizedBox(
-                                                                    height: 3),
-                                                                Text(
-                                                                    "Once your rental is completed, payment\nto your bank account will be processed\nwithin 10-15 days.\n\nLeave honest feedback for your fellow\nsizters!",
+                                                      Flexible(
+                                                        child: Container(
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    right: 10,
+                                                                    left: 15),
+                                                            child: SizedBox(
+                                                              width:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    "Approve rental",
+                                                                    style: GoogleFonts.dmSerifDisplay(
+                                                                        color: MyColors
+                                                                            .themecolor,
+                                                                        fontWeight:
+                                                                            FontWeight.w400),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          3),
+                                                                  Text(
+                                                                    "You have the choice to approve or decline\nall rental request that you receive.\n\nCommunicate directly with our team or\nyour potential renter via our secure\nmessaging system.",
                                                                     style: GoogleFonts.lexendDeca(
                                                                         color: const Color
                                                                             .fromARGB(
@@ -2483,1172 +2285,1400 @@ class _HomeNavState extends State<HomeNav> {
                                                                         fontSize:
                                                                             10.5,
                                                                         fontWeight:
-                                                                            FontWeight
-                                                                                .w300)),
-                                                                const SizedBox(
-                                                                    height: 5),
-                                                              ],
-                                                            ),
-                                                          )),
-                                                    )
-                                                  ],
+                                                                            FontWeight.w300),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          5),
+                                                                ],
+                                                              ),
+                                                            )),
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                              ],
+                                            ),
+
+                                            // step 3
+
+                                            const SizedBox(height: 20),
+
+                                            Stack(
+                                              children: [
+                                                Container(
+                                                    height: 130,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 55,
+                                                            left: 15),
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                        color: Colors.white,
+                                                        borderRadius: const BorderRadius
+                                                            .only(
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    60),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10),
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    10)),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      211,
+                                                                      211,
+                                                                      211),
+                                                              blurRadius: 1,
+                                                              offset: Offset(
+                                                                  0.0, 4))
+                                                        ])),
+                                                Container(
+                                                  height: 130,
+                                                  margin: const EdgeInsets.only(
+                                                      left: 10, right: 15),
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    child: Row(
+                                                      children: [
+                                                        Flexible(
+                                                          child: Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      right: 10,
+                                                                      left: 10),
+                                                              child: SizedBox(
+                                                                width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .end,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Ship",
+                                                                      style: GoogleFonts.dmSerifDisplay(
+                                                                          color: MyColors
+                                                                              .themecolor,
+                                                                          fontWeight:
+                                                                              FontWeight.w400),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            3),
+                                                                    Text(
+                                                                        "We take care of everything from pick-up\nto return once dry cleaned for your\nhassle-free lending.\n\nAll you have to do is approve rental\nrequest!",
+                                                                        textAlign:
+                                                                            TextAlign
+                                                                                .end,
+                                                                        style: GoogleFonts.lexendDeca(
+                                                                            color: const Color.fromARGB(
+                                                                                255,
+                                                                                98,
+                                                                                98,
+                                                                                98),
+                                                                            fontSize:
+                                                                                10.5,
+                                                                            fontWeight:
+                                                                                FontWeight.w300)),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            5),
+                                                                  ],
+                                                                ),
+                                                              )),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 5),
+                                                        Container(
+                                                          width: 90,
+                                                          height: 90,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          decoration: BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              color: const Color(
+                                                                  0xffF5F6F1),
+                                                              border: Border.all(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  width: 1)),
+                                                          child: Image.asset(
+                                                            "assets/images/lendthird.png",
+                                                            width: 50,
+                                                            height: 50,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+
+                                            const SizedBox(height: 20),
+
+                                            // step 4
+
+                                            Stack(
+                                              children: [
+                                                Container(
+                                                    height: 130,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 55,
+                                                            right: 15),
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: Colors.black,
+                                                            width: 1),
+                                                        color: Colors.white,
+                                                        borderRadius: const BorderRadius
+                                                            .only(
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    60),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10),
+                                                            bottomLeft:
+                                                                Radius.circular(
+                                                                    10)),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      211,
+                                                                      211,
+                                                                      211),
+                                                              blurRadius: 1,
+                                                              offset: Offset(
+                                                                  0.0, 4))
+                                                        ])),
+                                                Container(
+                                                  height: 130,
+                                                  margin: const EdgeInsets.only(
+                                                      left: 10, right: 10),
+                                                  child: Row(
+                                                    children: [
+                                                      const SizedBox(width: 5),
+                                                      Container(
+                                                        width: 90,
+                                                        height: 90,
+                                                        alignment:
+                                                            Alignment.center,
+                                                        decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            color: const Color(
+                                                                0xffF5F6F1),
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .black,
+                                                                width: 1)),
+                                                        child: Image.asset(
+                                                          "assets/images/lendfour.png",
+                                                          width: 50,
+                                                          height: 50,
+                                                        ),
+                                                      ),
+                                                      Flexible(
+                                                        child: Container(
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    right: 10,
+                                                                    left: 15),
+                                                            child: SizedBox(
+                                                              width:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    "Get paid and review",
+                                                                    style: GoogleFonts.dmSerifDisplay(
+                                                                        color: MyColors
+                                                                            .themecolor,
+                                                                        fontWeight:
+                                                                            FontWeight.w400),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          3),
+                                                                  Text(
+                                                                      "Once your rental is completed, payment\nto your bank account will be processed\nwithin 10-15 days.\n\nLeave honest feedback for your fellow\nsizters!",
+                                                                      style: GoogleFonts.lexendDeca(
+                                                                          color: const Color
+                                                                              .fromARGB(
+                                                                              255,
+                                                                              98,
+                                                                              98,
+                                                                              98),
+                                                                          fontSize:
+                                                                              10.5,
+                                                                          fontWeight:
+                                                                              FontWeight.w300)),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          5),
+                                                                ],
+                                                              ),
+                                                            )),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        InkWell(
-                          onTap: () {
-                            showDialogRental();
-                          },
-                          child: Container(
-                              alignment: Alignment.center,
-                              decoration: const BoxDecoration(
-                                  color: MyColors.themecolor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                              height: 40,
-                              width: 200,
-                              child: Text("START RENTING",
-                                  style: GoogleFonts.lexendExa(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w300))),
-                        ),
-
-                        const SizedBox(height: 25),
-
-                        // how much earn box with textformfield ========================================================================================
-
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Image.asset("assets/images/Rectangle.png"),
-                            Container(
-                              margin: const EdgeInsets.only(top: 15),
-                              child: Text(
-                                "Do you have designer items you don't get to wear but you're\nnot ready to let go of them yet?\nIs your closet full of luxury pieces your don't use anymore?\n\nLend them now!",
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.lexendDeca(
-                                    fontSize: 12,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w300),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
 
-                        const SizedBox(height: 20),
+                          InkWell(
+                            onTap: () {
 
-                        InkWell(
-                          onTap: () async {
-                            SharedPreferences sharedPreferences =
-                                await SharedPreferences.getInstance();
+                              firebaseEventCalled("Click_Start_Renting_Android");
+                              showDialogRental();
+                            },
+                            child: Container(
+                                alignment: Alignment.center,
+                                decoration: const BoxDecoration(
+                                    color: MyColors.themecolor,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5))),
+                                height: 40,
+                                width: 200,
+                                child: Text("START RENTING",
+                                    style: GoogleFonts.lexendExa(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300))),
+                          ),
 
-                            if (sharedPreferences
-                                    .getString(SizValue.isLogged)
-                                    .toString() ==
-                                "null") {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          LoginPage(otpNumber: "")));
-                            } else if (sharedPreferences
-                                    .getString(SizValue.isLogged)
-                                    .toString() ==
-                                "1") {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => BasicLoginInfo(
-                                          fromWhere: sharedPreferences
-                                              .getString(SizValue.source)
-                                              .toString())));
-                            } else if (sharedPreferences
-                                    .getString(SizValue.isLogged)
-                                    .toString() ==
-                                "2") {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AccountCreate()));
-                            } else if (sharedPreferences
-                                    .getString(SizValue.underReview)
-                                    .toString() ==
-                                "0") {
-                              showReviewdialog(
-                                  sharedPreferences
-                                      .getString(SizValue.underReviewMsg)
-                                      .toString(),
-                                  sharedPreferences
-                                      .getString(SizValue.underReview)
-                                      .toString());
-                            } else if (sharedPreferences
-                                    .getString(SizValue.underReview)
-                                    .toString() ==
-                                "2") {
-                              showReviewdialog(
-                                  sharedPreferences
-                                      .getString(SizValue.rejectedReviewMSG)
-                                      .toString(),
-                                  sharedPreferences
-                                      .getString(SizValue.underReview)
-                                      .toString());
-                            } else if (sharedPreferences
-                                    .getString(SizValue.underReview)
-                                    .toString() ==
-                                "3") {
-                              showReviewdialog(
-                                  sharedPreferences
-                                      .getString(SizValue.incompleteMessage)
-                                      .toString(),
-                                  sharedPreferences
-                                      .getString(SizValue.underReview)
-                                      .toString());
-                            } else {
+                          const SizedBox(height: 25),
+
+                          // how much earn box with textformfield ========================================================================================
+
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Image.asset("assets/images/Rectangle.png"),
+                              Container(
+                                margin: const EdgeInsets.only(top: 15),
+                                child: Text(
+                                  "Do you have designer items you don't get to wear but you're\nnot ready to let go of them yet?\nIs your closet full of luxury pieces your don't use anymore?\n\nLend them now!",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.lexendDeca(
+                                      fontSize: 12,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w300),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          InkWell(
+                            onTap: () async {
+
+                               firebaseEventCalled("Click_Start_Lending_Android");
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => AddNav(
                                             fromhome: false,
                                           )));
-                            }
-                          },
-                          child: Container(
-                              alignment: Alignment.center,
-                              width: 200,
-                              decoration: const BoxDecoration(
-                                  color: MyColors.themecolor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                              height: 40,
-                              child: Text("START LENDING",
-                                  style: GoogleFonts.lexendExa(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w300))),
-                        ),
+                            },
+                            child: Container(
+                                alignment: Alignment.center,
+                                width: 200,
+                                decoration: const BoxDecoration(
+                                    color: MyColors.themecolor,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5))),
+                                height: 40,
+                                child: Text("START LENDING",
+                                    style: GoogleFonts.lexendExa(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300))),
+                          ),
 
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.only(
-                              top: 10, bottom: 10, left: 20, right: 20),
-                          padding: const EdgeInsets.all(5),
-                          child: Column(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                child: Text(
-                                  "How much can I earn with siz?",
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.dmSerifDisplay(
-                                      fontSize: 20,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400),
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: const EdgeInsets.only(
+                                top: 10, bottom: 10, left: 20, right: 20),
+                            padding: const EdgeInsets.all(5),
+                            child: Column(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    "How much can I earn with siz?",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.dmSerifDisplay(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w400),
+                                  ),
                                 ),
-                              ),
 
-                              Container(
-                                margin: const EdgeInsets.only(top: 15, bottom: 20),
-                                width: 50,
-                                height: 1,
-                                color: Colors.black,
-                              ),
-                              // textformfield category
-                              // drop down ==================================================
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      top: 15, bottom: 20),
+                                  width: 50,
+                                  height: 1,
+                                  color: Colors.black,
+                                ),
+                                // textformfield category
+                                // drop down ==================================================
 
-                              // Row of items ==================================================
+                                // Row of items ==================================================
 
-                              Row(
-                                children: [
-                                  Flexible(
-                                    flex: 1,
-                                    child: Container(
-                                      
-                                     
-                                       decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(
-                                            color: Colors.grey,
-                                          ),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(5))),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      flex: 1,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                            ),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(5))),
+                                        margin: const EdgeInsets.only(right: 5),
+                                        child: CustomDropdown<String>(
+                                          hideSelectedFieldWhenExpanded: false,
+                                          hintText: 'Select Category',
+                                          items: dropDownList,
+                                          excludeSelected: false,
 
-                                             
-                                      margin: const EdgeInsets.only(right: 5),
-                                      child: CustomDropdown<String>(
-                                        hideSelectedFieldWhenExpanded: false,
-                                        hintText: 'Select Category',
-                                        items: dropDownList,
-                                        excludeSelected: false,
-                                       
-                                        // expandedBorder: Border.all(color: Colors.black),
-                                        headerBuilder: (context, selectedItem) {
-                                          return Text(
-                                            selectedItem,
-                                            style: GoogleFonts.lexendDeca(
-                                                fontSize: 12,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w300),
-                                          );
-                                        },
-
-                                        listItemBuilder: (context, item) {
-                                          return Text(item,
+                                          // expandedBorder: Border.all(color: Colors.black),
+                                          headerBuilder:
+                                              (context, selectedItem) {
+                                            return Text(
+                                              selectedItem,
                                               style: GoogleFonts.lexendDeca(
                                                   fontSize: 12,
-                                                  fontWeight: FontWeight.w300,
-                                                  color: Colors.black));
-                                        },
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w300),
+                                            );
+                                          },
 
-                                        hintBuilder: (context, hint) {
-                                          return Text(
-                                            hint,
-                                            style: GoogleFonts.lexendDeca(
+                                          listItemBuilder: (context, item) {
+                                            return Text(item,
+                                                style: GoogleFonts.lexendDeca(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w300,
+                                                    color: Colors.black));
+                                          },
+
+                                          hintBuilder: (context, hint) {
+                                            return Text(
+                                              hint,
+                                              style: GoogleFonts.lexendDeca(
+                                                  fontSize: 12,
+                                                  color: const Color.fromARGB(
+                                                      255, 179, 179, 179),
+                                                  fontWeight: FontWeight.w300),
+                                            );
+                                          },
+                                          onChanged: (value) {
+                                            setState(() {
+                                              earningCategory = value;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      flex: 1,
+                                      child: Container(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 4, left: 12),
+                                        alignment: Alignment.centerLeft,
+                                        height: 50,
+                                        margin: const EdgeInsets.only(left: 5),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                            ),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(5))),
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        child: TextFormField(
+                                          controller: retailcontroler,
+                                          maxLength: 5,
+                                          style: GoogleFonts.lexendDeca(
+                                              fontSize: 12,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w300),
+                                          keyboardType: TextInputType.number,
+                                          decoration: InputDecoration(
+                                            counterText: "",
+                                            border: InputBorder.none,
+                                            hintText: "Enter Retail Price",
+                                            hintStyle: GoogleFonts.lexendDeca(
                                                 fontSize: 12,
                                                 color: const Color.fromARGB(
                                                     255, 179, 179, 179),
                                                 fontWeight: FontWeight.w300),
-                                          );
-                                        },
-                                        onChanged: (value) {
-                                          setState(() {
-                                            earningCategory = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 1,
-                                    child: Container(
-                                      padding: const EdgeInsets.only(
-                                          bottom: 4, left: 12),
-                                      alignment: Alignment.centerLeft,
-                                      height: 50,
-                                      margin: const EdgeInsets.only(left: 5),
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(
-                                            color: Colors.grey,
                                           ),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(5))),
-                                      width: MediaQuery.of(context).size.width,
-                                      child: TextFormField(
-                                        controller: retailcontroler,
-                                        maxLength: 5,
-                                        style: GoogleFonts.lexendDeca(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w300),
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          counterText: "",
-                                          border: InputBorder.none,
-                                          hintText: "Enter Retail Price",
-                                          hintStyle: GoogleFonts.lexendDeca(
-                                              fontSize: 12,
-                                              color: const Color.fromARGB(
-                                                  255, 179, 179, 179),
-                                              fontWeight: FontWeight.w300),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
 
-                              const SizedBox(height: 15),
+                                const SizedBox(height: 15),
 
-                              InkWell(
-                                onTap: () async {
-                                  if (earningCategory.isEmpty) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                      content: Text("Please select category",
-                                          style: GoogleFonts.lexendDeca(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.white)),
-                                      duration: const Duration(seconds: 1),
-                                    ));
-                                  } else if (retailcontroler.text.isEmpty) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                      content: Text("Please enter retail price",
-                                          style: GoogleFonts.lexendDeca(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.white)),
-                                      duration: const Duration(seconds: 1),
-                                    ));
-                                  } else if (int.parse(retailcontroler.text) <
-                                      500) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      content:
-                                          Text("Price cannot be less than 500"),
-                                      duration: Duration(seconds: 1),
-                                    ));
-                                  } else {
-                                    if (earningCategory == "Clothes") {
-                                      await calculateEarning();
+                                InkWell(
+                                  onTap: () async {
 
-                                      setState(() {
-                                        visiblityEarning = "Clothes";
-                                      });
+                                      firebaseEventCalled("Click_Earn_Calculate_Android");
+                                    if (earningCategory.isEmpty) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text("Please select category",
+                                            style: GoogleFonts.lexendDeca(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.white)),
+                                        duration: const Duration(seconds: 1),
+                                      ));
+                                    } else if (retailcontroler.text.isEmpty) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text(
+                                            "Please enter retail price",
+                                            style: GoogleFonts.lexendDeca(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.white)),
+                                        duration: const Duration(seconds: 1),
+                                      ));
+                                    } else if (int.parse(retailcontroler.text) <
+                                        500) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                            "Price cannot be less than 500"),
+                                        duration: Duration(seconds: 1),
+                                      ));
                                     } else {
-                                      await calculateEarning();
+                                      if (earningCategory == "Clothes") {
+                                        await calculateEarning();
 
-                                      setState(() {
-                                        visiblityEarning = "Bags";
-                                      });
+                                        setState(() {
+                                          visiblityEarning = "Clothes";
+                                        });
+                                      } else {
+                                        await calculateEarning();
+
+                                        setState(() {
+                                          visiblityEarning = "Bags";
+                                        });
+                                      }
                                     }
-                                  }
-                                },
+                                  },
+                                  child: Container(
+                                      alignment: Alignment.center,
+                                      height: 40,
+                                      width: 200,
+                                      decoration: const BoxDecoration(
+                                          color: MyColors.themecolor,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(5))),
+                                      child: Text("CALCULATE",
+                                          style: GoogleFonts.lexendExa(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w300))),
+                                ),
+
+                                const SizedBox(height: 10),
+
+                                // for clothes earning ============================================================================================
+
+                                visiblityEarning == "Clothes"
+                                    ?
+
+                                    // for clothes earning ============================================================================================
+
+                                    Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // close icon
+
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                visiblityEarning = "";
+
+                                                retailcontroler.text = "";
+                                              });
+                                            },
+                                            child: Container(
+                                              alignment: Alignment.centerRight,
+                                              child: const Icon(
+                                                Icons.close,
+                                                size: 18,
+                                              ),
+                                            ),
+                                          ),
+
+                                          //  estimated earning text
+
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "Estimated Earnings",
+                                              style: GoogleFonts.dmSerifDisplay(
+                                                  fontSize: 20,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+
+                                          // heading of days
+
+                                          const SizedBox(height: 10),
+
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    right: 5),
+                                                alignment: Alignment.center,
+                                                width: 100,
+                                                height: 30,
+                                                color: const Color(0x0fff6f51),
+                                                child: Text(
+                                                  "3 DAYS",
+                                                  style: GoogleFonts.lexendExa(
+                                                      fontSize: 12,
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width: 100,
+                                                height: 30,
+                                                color: const Color(0x0fff6f51),
+                                                child: Text(
+                                                  "8 DAYS",
+                                                  style: GoogleFonts.lexendExa(
+                                                      fontSize: 12,
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 5),
+                                                alignment: Alignment.center,
+                                                width: 100,
+                                                height: 30,
+                                                color: const Color(0x0fff6f51),
+                                                child: Text(
+                                                  "20 DAYS",
+                                                  style: GoogleFonts.lexendExa(
+                                                      fontSize: 12,
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+
+                                          const SizedBox(height: 5),
+
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    right: 5),
+                                                alignment: Alignment.center,
+                                                width: 100,
+                                                height: 30,
+                                                color: const Color(0x0fff6f51),
+                                                child: Text(
+                                                  calulateReponse.isEmpty
+                                                      ? ""
+                                                      : "AED ${calulateReponse["earn_3_days"]}",
+                                                  style: GoogleFonts.lexendExa(
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize: 16,
+                                                      color:
+                                                          MyColors.themecolor),
+                                                ),
+                                              ),
+                                              Container(
+                                                alignment: Alignment.center,
+                                                width: 100,
+                                                height: 30,
+                                                color: const Color(0x0fff6f51),
+                                                child: Text(
+                                                  calulateReponse.isEmpty
+                                                      ? ""
+                                                      : "AED ${calulateReponse["earn_8_days"]}",
+                                                  style: GoogleFonts.lexendExa(
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize: 16,
+                                                      color:
+                                                          MyColors.themecolor),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 5),
+                                                alignment: Alignment.center,
+                                                width: 100,
+                                                height: 30,
+                                                color: const Color(0x0fff6f51),
+                                                child: Text(
+                                                  calulateReponse.isEmpty
+                                                      ? ""
+                                                      : "AED ${calulateReponse["earn_20_days"]}",
+                                                  style: GoogleFonts.lexendExa(
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize: 16,
+                                                      color:
+                                                          MyColors.themecolor),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      )
+                                    : visiblityEarning == "Bags"
+                                        ?
+                                        // for bags earning ============================================================================================
+
+                                        Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              // close icon
+
+                                              InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    visiblityEarning = "";
+
+                                                    retailcontroler.text = "";
+                                                  });
+                                                },
+                                                child: Container(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: const Icon(
+                                                    Icons.close,
+                                                    size: 18,
+                                                  ),
+                                                ),
+                                              ),
+
+                                              //  estimated earning text
+
+                                              Container(
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  "Estimated Earnings",
+                                                  style: GoogleFonts
+                                                      .dmSerifDisplay(
+                                                          fontSize: 20,
+                                                          color: Colors.black),
+                                                ),
+                                              ),
+
+                                              // heading of days
+
+                                              const SizedBox(height: 10),
+
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 5),
+                                                    alignment: Alignment.center,
+                                                    width: 100,
+                                                    height: 30,
+                                                    color:
+                                                        const Color(0x0fff6f51),
+                                                    child: Text(
+                                                      "8 DAYS",
+                                                      style:
+                                                          GoogleFonts.lexendExa(
+                                                              fontSize: 12,
+                                                              color:
+                                                                  Colors.black),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    alignment: Alignment.center,
+                                                    width: 100,
+                                                    height: 30,
+                                                    color:
+                                                        const Color(0x0fff6f51),
+                                                    child: Text(
+                                                      "20 DAYS",
+                                                      style:
+                                                          GoogleFonts.lexendExa(
+                                                              fontSize: 12,
+                                                              color:
+                                                                  Colors.black),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+
+                                              const SizedBox(height: 5),
+
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 5),
+                                                    alignment: Alignment.center,
+                                                    width: 100,
+                                                    height: 30,
+                                                    color:
+                                                        const Color(0x0fff6f51),
+                                                    child: Text(
+                                                      calulateReponse.isEmpty
+                                                          ? ""
+                                                          : "AED ${calulateReponse["earn_8_days"]}",
+                                                      style:
+                                                          GoogleFonts.lexendExa(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w300,
+                                                              fontSize: 16,
+                                                              color: MyColors
+                                                                  .themecolor),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    alignment: Alignment.center,
+                                                    width: 100,
+                                                    height: 30,
+                                                    color:
+                                                        const Color(0x0fff6f51),
+                                                    child: Text(
+                                                      calulateReponse.isEmpty
+                                                          ? ""
+                                                          : "AED ${calulateReponse["earn_20_days"]}",
+                                                      style:
+                                                          GoogleFonts.lexendExa(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w300,
+                                                              fontSize: 16,
+                                                              color: MyColors
+                                                                  .themecolor),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          )
+                                        : Container()
+                              ],
+                            ),
+                          ),
+
+                          // Bottom text =========================================================================================
+
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Text(
+                              "Benefits of renting",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.dmSerifDisplay(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ),
+
+                          Container(
+                            margin: const EdgeInsets.only(top: 15, bottom: 25),
+                            width: 50,
+                            height: 1,
+                            color: Colors.black,
+                          ),
+
+                          //  Bottom  four images =======================================================================================
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Flexible(
                                 child: Container(
-                                    alignment: Alignment.center,
-                                    height: 40,
-                                    width: 200,
-                                    decoration: const BoxDecoration(
-                                        color: MyColors.themecolor,
-                                        borderRadius:
-                                            BorderRadius.all(Radius.circular(5))),
-                                    child: Text("CALCULATE",
-                                        style: GoogleFonts.lexendExa(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w300))),
+                                  margin: const EdgeInsets.only(
+                                      left: 10, right: 5, bottom: 10),
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 180,
+                                  child: Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/bottom1home.png",
+                                        fit: BoxFit.cover,
+                                        height: 180,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Unlimited Outfit",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.dmSerifDisplay(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 13,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            "Transform the way we keep\nup with the latest trends",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.lexendDeca(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 12,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 25)
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ),
+                              Flexible(
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      right: 10, left: 5, bottom: 10),
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 180,
+                                  child: Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/bottom2home.png",
+                                        fit: BoxFit.cover,
+                                        height: 180,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Passive Income",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.dmSerifDisplay(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 13,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            "Earn from your existing rarely\nused fashion items",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.lexendDeca(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 12,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 25)
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // row second 2
 
-                              const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 10, right: 5, bottom: 10),
+                                  height: 180,
+                                  child: Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/bottom3home.png",
+                                        fit: BoxFit.cover,
+                                        height: 180,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Social Experience",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.dmSerifDisplay(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 13,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            "More than just a community,\nwe are a sizterhood!",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.lexendDeca(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 12,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 25)
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      right: 10, left: 5, bottom: 10),
+                                  height: 180,
+                                  child: Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/bottom4home.png",
+                                        fit: BoxFit.cover,
+                                        height: 180,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Sustainable Fashion",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.dmSerifDisplay(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 13,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            "Keep your wardrobe updated\nin an eco-friendly way",
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.lexendDeca(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 12,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 25)
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
 
-                              // for clothes earning ============================================================================================
+                    // top heading and search =====================================================================================
 
-                              visiblityEarning == "Clothes"
-                                  ?
+                    Column(
+                      children: [
+                        // Top text=================================================================================
 
-                                  // for clothes earning ============================================================================================
+                        CarouselSlider.builder(
+                            itemCount: toplist.length,
+                            itemBuilder: (BuildContext context, int itemIndex,
+                                    int pageViewIndex) =>
+                                Container(
+                                    padding: const EdgeInsets.only(
+                                        top: 10, bottom: 10),
+                                    decoration: const BoxDecoration(
+                                        color: Color(0xffF6F5F1)),
+                                    alignment: Alignment.center,
+                                    child: Text(toplist[itemIndex],
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.lexendExa(
+                                          fontWeight: FontWeight.w300,
+                                          color: MyColors.themecolor,
+                                          fontSize: 14,
+                                        ))),
+                            options: CarouselOptions(
+                                height: 40.0,
+                                autoPlay: true,
+                                autoPlayInterval: const Duration(seconds: 2))),
 
-                                  Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        // close icon
+                        // top four icons ==============================================================================================
 
-                                        InkWell(
-                                          onTap: () {
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20, right: 20, top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkWell(
+                                  onTap: () async {
+                                    SharedPreferences sharedPreferences =
+                                        await SharedPreferences.getInstance();
+
+                                    if (sharedPreferences
+                                            .getString(SizValue.isLogged)
+                                            .toString() ==
+                                        "null") {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginPage(otpNumber: "")));
+                                    } else if (sharedPreferences
+                                            .getString(SizValue.isLogged)
+                                            .toString() ==
+                                        "1") {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BasicLoginInfo(
+                                                      fromWhere:
+                                                          sharedPreferences
+                                                              .getString(
+                                                                  SizValue
+                                                                      .source)
+                                                              .toString())));
+                                    } else if (sharedPreferences
+                                            .getString(SizValue.isLogged)
+                                            .toString() ==
+                                        "2") {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AccountCreate()));
+                                    } else if (sharedPreferences
+                                            .getString(SizValue.underReview)
+                                            .toString() ==
+                                        "0") {
+                                      showReviewdialog(
+                                          sharedPreferences
+                                              .getString(
+                                                  SizValue.underReviewMsg)
+                                              .toString(),
+                                          sharedPreferences
+                                              .getString(SizValue.underReview)
+                                              .toString());
+                                    } else if (sharedPreferences
+                                            .getString(SizValue.underReview)
+                                            .toString() ==
+                                        "2") {
+                                      showReviewdialog(
+                                          sharedPreferences
+                                              .getString(
+                                                  SizValue.rejectedReviewMSG)
+                                              .toString(),
+                                          sharedPreferences
+                                              .getString(SizValue.underReview)
+                                              .toString());
+                                    } else if (sharedPreferences
+                                            .getString(SizValue.underReview)
+                                            .toString() ==
+                                        "3") {
+                                      showReviewdialog(
+                                          sharedPreferences
+                                              .getString(
+                                                  SizValue.incompleteMessage)
+                                              .toString(),
+                                          sharedPreferences
+                                              .getString(SizValue.underReview)
+                                              .toString());
+                                    } else {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Cart()));
+                                    }
+                                  },
+                                  child: SvgPicture.asset(
+                                    "assets/images/bag.svg",
+                                    width: 20,
+                                    height: 20,
+                                  )),
+                              Image.asset(
+                                "assets/images/appiconpng.png",
+                                width: 40,
+                                height: 40,
+                              ),
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                direction: Axis.horizontal,
+                                children: [
+                                  InkWell(
+                                      onTap: () async {
+                                        SharedPreferences sharedPreferences =
+                                            await SharedPreferences
+                                                .getInstance();
+
+                                        if (sharedPreferences
+                                                .getString(SizValue.isLogged)
+                                                .toString() ==
+                                            "null") {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      LoginPage(
+                                                          otpNumber: "")));
+                                        } else if (sharedPreferences
+                                                .getString(SizValue.isLogged)
+                                                .toString() ==
+                                            "1") {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      BasicLoginInfo(
+                                                          fromWhere:
+                                                              sharedPreferences
+                                                                  .getString(
+                                                                      SizValue
+                                                                          .source)
+                                                                  .toString())));
+                                        }
+                                      
+
+                                        // else if (sharedPreferences
+                                        //         .getString(SizValue.underReview)
+                                        //         .toString() ==
+                                        //     "0") {
+                                        //   showReviewdialog(
+                                        //       sharedPreferences
+                                        //           .getString(
+                                        //               SizValue.underReviewMsg)
+                                        //           .toString(),
+                                        //       sharedPreferences
+                                        //           .getString(
+                                        //               SizValue.underReview)
+                                        //           .toString());
+                                        // }
+                                        
+                                         else if (sharedPreferences
+                                                .getString(SizValue.underReview)
+                                                .toString() ==
+                                            "2") {
+                                          showReviewdialog(
+                                              sharedPreferences
+                                                  .getString(SizValue
+                                                      .rejectedReviewMSG)
+                                                  .toString(),
+                                              sharedPreferences
+                                                  .getString(
+                                                      SizValue.underReview)
+                                                  .toString());
+                                        } else if (sharedPreferences
+                                                .getString(SizValue.underReview)
+                                                .toString() ==
+                                            "3") {
+                                          showReviewdialog(
+                                              sharedPreferences
+                                                  .getString(SizValue
+                                                      .incompleteMessage)
+                                                  .toString(),
+                                              sharedPreferences
+                                                  .getString(
+                                                      SizValue.underReview)
+                                                  .toString());
+                                        } else {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Wishlist()));
+                                        }
+                                      },
+                                      child: SvgPicture.asset(
+                                        "assets/images/heart.svg",
+                                        width: 20,
+                                        height: 20,
+                                      )),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        AnimatedContainer(
+                          alignment: Alignment.topCenter,
+                          curve: Curves.easeInOutCubic,
+                          height: tabafterfirst ? 500 : 48,
+                          margin: const EdgeInsets.only(
+                              left: 15, right: 15, bottom: 20, top: 20),
+                          decoration: BoxDecoration(
+                              boxShadow: const [
+                                BoxShadow(
+                                    color: Color.fromARGB(223, 218, 218, 218),
+                                    blurRadius: 2,
+                                    offset: Offset(0, 0))
+                              ],
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.white),
+                          duration: const Duration(milliseconds: 800),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  const SizedBox(width: 15),
+                                  SvgPicture.asset("assets/images/search.svg"),
+                                  const SizedBox(width: 15),
+
+                                  // textformfield search
+
+                                  Flexible(
+                                      child: TextFormField(
+                                          textInputAction:
+                                              TextInputAction.search,
+                                          onChanged: (value) {
+                                            if (value.isEmpty) {
+                                              setState(() {
+                                                showarrowsearch = false;
+                                                searchInputValue = value;
+                                              });
+                                            } else {
+                                              setState(() {
+                                                searchInputValue = value;
+
+                                                showarrowsearch = true;
+                                              });
+                                            }
+
+                                            startTimer() {
+                                              checkTypingTimer = Timer(
+                                                  const Duration(
+                                                      milliseconds: 600),
+                                                  () async {
+                                                getSearch(value);
+                                              });
+                                            }
+
+                                            checkTypingTimer?.cancel();
+                                            startTimer();
+                                          },
+                                          onTapOutside: (event) {
                                             setState(() {
-                                              visiblityEarning = "";
-
-                                              retailcontroler.text = "";
+                                              FocusManager.instance.primaryFocus
+                                                  ?.unfocus();
                                             });
                                           },
-                                          child: Container(
-                                            alignment: Alignment.centerRight,
-                                            child: const Icon(
-                                              Icons.close,
-                                              size: 18,
-                                            ),
-                                          ),
-                                        ),
-
-                                        //  estimated earning text
-
-                                        Container(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "Estimated Earnings",
-                                            style: GoogleFonts.dmSerifDisplay(
-                                                fontSize: 20, color: Colors.black),
-                                          ),
-                                        ),
-
-                                        // heading of days
-
-                                        const SizedBox(height: 10),
-
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              margin:
-                                                  const EdgeInsets.only(right: 5),
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 30,
-                                              color: const Color(0x0fff6f51),
-                                              child: Text(
-                                                "3 DAYS",
-                                                style: GoogleFonts.lexendExa(
-                                                    fontSize: 12,
-                                                    color: Colors.black),
-                                              ),
-                                            ),
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 30,
-                                              color: const Color(0x0fff6f51),
-                                              child: Text(
-                                                "8 DAYS",
-                                                style: GoogleFonts.lexendExa(
-                                                    fontSize: 12,
-                                                    color: Colors.black),
-                                              ),
-                                            ),
-                                            Container(
-                                              margin:
-                                                  const EdgeInsets.only(left: 5),
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 30,
-                                              color: const Color(0x0fff6f51),
-                                              child: Text(
-                                                "20 DAYS",
-                                                style: GoogleFonts.lexendExa(
-                                                    fontSize: 12,
-                                                    color: Colors.black),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-
-                                        const SizedBox(height: 5),
-
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              margin:
-                                                  const EdgeInsets.only(right: 5),
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 30,
-                                              color: const Color(0x0fff6f51),
-                                              child: Text(
-                                                calulateReponse.isEmpty
-                                                    ? ""
-                                                    : "AED ${calulateReponse["earn_3_days"]}",
-                                                style: GoogleFonts.lexendExa(
-                                                    fontWeight: FontWeight.w300,
-                                                    fontSize: 16,
-                                                    color: MyColors.themecolor),
-                                              ),
-                                            ),
-                                            Container(
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 30,
-                                              color: const Color(0x0fff6f51),
-                                              child: Text(
-                                                calulateReponse.isEmpty
-                                                    ? ""
-                                                    : "AED ${calulateReponse["earn_8_days"]}",
-                                                style: GoogleFonts.lexendExa(
-                                                    fontWeight: FontWeight.w300,
-                                                    fontSize: 16,
-                                                    color: MyColors.themecolor),
-                                              ),
-                                            ),
-                                            Container(
-                                              margin:
-                                                  const EdgeInsets.only(left: 5),
-                                              alignment: Alignment.center,
-                                              width: 100,
-                                              height: 30,
-                                              color: const Color(0x0fff6f51),
-                                              child: Text(
-                                                calulateReponse.isEmpty
-                                                    ? ""
-                                                    : "AED ${calulateReponse["earn_20_days"]}",
-                                                style: GoogleFonts.lexendExa(
-                                                    fontWeight: FontWeight.w300,
-                                                    fontSize: 16,
-                                                    color: MyColors.themecolor),
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  : visiblityEarning == "Bags"
-                                      ?
-                                      // for bags earning ============================================================================================
-
-                                      Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            // close icon
-
-                                            InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  visiblityEarning = "";
-
-                                                  retailcontroler.text = "";
-                                                });
-                                              },
-                                              child: Container(
-                                                alignment: Alignment.centerRight,
-                                                child: const Icon(
-                                                  Icons.close,
-                                                  size: 18,
-                                                ),
-                                              ),
-                                            ),
-
-                                            //  estimated earning text
-
-                                            Container(
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "Estimated Earnings",
-                                                style: GoogleFonts.dmSerifDisplay(
-                                                    fontSize: 20,
-                                                    color: Colors.black),
-                                              ),
-                                            ),
-
-                                            // heading of days
-
-                                            const SizedBox(height: 10),
-
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                      right: 5),
-                                                  alignment: Alignment.center,
-                                                  width: 100,
-                                                  height: 30,
-                                                  color: const Color(0x0fff6f51),
-                                                  child: Text(
-                                                    "8 DAYS",
-                                                    style: GoogleFonts.lexendExa(
-                                                        fontSize: 12,
-                                                        color: Colors.black),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  alignment: Alignment.center,
-                                                  width: 100,
-                                                  height: 30,
-                                                  color: const Color(0x0fff6f51),
-                                                  child: Text(
-                                                    "20 DAYS",
-                                                    style: GoogleFonts.lexendExa(
-                                                        fontSize: 12,
-                                                        color: Colors.black),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-
-                                            const SizedBox(height: 5),
-
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                      right: 5),
-                                                  alignment: Alignment.center,
-                                                  width: 100,
-                                                  height: 30,
-                                                  color: const Color(0x0fff6f51),
-                                                  child: Text(
-                                                    calulateReponse.isEmpty
-                                                        ? ""
-                                                        : "AED ${calulateReponse["earn_8_days"]}",
-                                                    style: GoogleFonts.lexendExa(
-                                                        fontWeight: FontWeight.w300,
-                                                        fontSize: 16,
-                                                        color: MyColors.themecolor),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  alignment: Alignment.center,
-                                                  width: 100,
-                                                  height: 30,
-                                                  color: const Color(0x0fff6f51),
-                                                  child: Text(
-                                                    calulateReponse.isEmpty
-                                                        ? ""
-                                                        : "AED ${calulateReponse["earn_20_days"]}",
-                                                    style: GoogleFonts.lexendExa(
-                                                        fontWeight: FontWeight.w300,
-                                                        fontSize: 16,
-                                                        color: MyColors.themecolor),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        )
-                                      : Container()
-                            ],
-                          ),
-                        ),
-
-                        // Bottom text =========================================================================================
-
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          child: Text(
-                            "Benefits of renting",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSerifDisplay(
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ),
-
-                        Container(
-                          margin: const EdgeInsets.only(top: 15, bottom: 25),
-                          width: 50,
-                          height: 1,
-                          color: Colors.black,
-                        ),
-
-                        //  Bottom  four images =======================================================================================
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              child: Container(
-                                margin: const EdgeInsets.only(
-                                    left: 10, right: 5, bottom: 10),
-                                width: MediaQuery.of(context).size.width,
-                                height: 180,
-                                child: Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    Image.asset(
-                                      "assets/images/bottom1home.png",
-                                      fit: BoxFit.cover,
-                                      height: 180,
-                                      width: MediaQuery.of(context).size.width,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Unlimited Outfit",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.dmSerifDisplay(
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 13,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "Transform the way we keep\nup with the latest trends",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.lexendDeca(
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 12,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 25)
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              child: Container(
-                                margin: const EdgeInsets.only(
-                                    right: 10, left: 5, bottom: 10),
-                                width: MediaQuery.of(context).size.width,
-                                height: 180,
-                                child: Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    Image.asset(
-                                      "assets/images/bottom2home.png",
-                                      fit: BoxFit.cover,
-                                      height: 180,
-                                      width: MediaQuery.of(context).size.width,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Passive Income",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.dmSerifDisplay(
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 13,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "Earn from your existing rarely\nused fashion items",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.lexendDeca(
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 12,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 25)
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        // row second 2
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              child: Container(
-                                margin: const EdgeInsets.only(
-                                    left: 10, right: 5, bottom: 10),
-                                height: 180,
-                                child: Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    Image.asset(
-                                      "assets/images/bottom3home.png",
-                                      fit: BoxFit.cover,
-                                      height: 180,
-                                      width: MediaQuery.of(context).size.width,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Social Experience",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.dmSerifDisplay(
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 13,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "More than just a community,\nwe are a sizterhood!",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.lexendDeca(
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 12,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 25)
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              child: Container(
-                                margin: const EdgeInsets.only(
-                                    right: 10, left: 5, bottom: 10),
-                                height: 180,
-                                child: Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    Image.asset(
-                                      "assets/images/bottom4home.png",
-                                      fit: BoxFit.cover,
-                                      height: 180,
-                                      width: MediaQuery.of(context).size.width,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Sustainable Fashion",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.dmSerifDisplay(
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 13,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "Keep your wardrobe updated\nin an eco-friendly way",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.lexendDeca(
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 12,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 25)
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // top heading and search =====================================================================================
-
-                  Column(
-                    children: [
-                      // Top text=================================================================================
-
-                      CarouselSlider.builder(
-                          itemCount: toplist.length,
-                          itemBuilder: (BuildContext context, int itemIndex,
-                                  int pageViewIndex) =>
-                              Container(
-                                  padding:
-                                      const EdgeInsets.only(top: 10, bottom: 10),
-                                  decoration:
-                                      const BoxDecoration(color: Color(0xffF6F5F1)),
-                                  alignment: Alignment.center,
-                                  child: Text(toplist[itemIndex],
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.lexendExa(
-                                        fontWeight: FontWeight.w300,
-                                        color: MyColors.themecolor,
-                                        fontSize: 14,
-                                      ))),
-                          options: CarouselOptions(
-                              height: 40.0,
-                              autoPlay: true,
-                              autoPlayInterval: const Duration(seconds: 2))),
-
-                      // top four icons ==============================================================================================
-
-                      Container(
-                        margin: const EdgeInsets.only(left: 20, right: 20, top: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            InkWell(
-                                onTap: () async {
-                                  SharedPreferences sharedPreferences =
-                                      await SharedPreferences.getInstance();
-
-                                  if (sharedPreferences
-                                          .getString(SizValue.isLogged)
-                                          .toString() ==
-                                      "null") {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                LoginPage(otpNumber: "")));
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.isLogged)
-                                          .toString() ==
-                                      "1") {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => BasicLoginInfo(
-                                                fromWhere: sharedPreferences
-                                                    .getString(SizValue.source)
-                                                    .toString())));
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.isLogged)
-                                          .toString() ==
-                                      "2") {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => AccountCreate()));
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.underReview)
-                                          .toString() ==
-                                      "0") {
-                                    showReviewdialog(
-                                        sharedPreferences
-                                            .getString(SizValue.underReviewMsg)
-                                            .toString(),
-                                        sharedPreferences
-                                            .getString(SizValue.underReview)
-                                            .toString());
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.underReview)
-                                          .toString() ==
-                                      "2") {
-                                    showReviewdialog(
-                                        sharedPreferences
-                                            .getString(SizValue.rejectedReviewMSG)
-                                            .toString(),
-                                        sharedPreferences
-                                            .getString(SizValue.underReview)
-                                            .toString());
-                                  } else if (sharedPreferences
-                                          .getString(SizValue.underReview)
-                                          .toString() ==
-                                      "3") {
-                                    showReviewdialog(
-                                        sharedPreferences
-                                            .getString(SizValue.incompleteMessage)
-                                            .toString(),
-                                        sharedPreferences
-                                            .getString(SizValue.underReview)
-                                            .toString());
-                                  } else {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => const Cart()));
-                                  }
-                                },
-                                child: SvgPicture.asset(
-                                  "assets/images/bag.svg",
-                                  width: 20,
-                                  height: 20,
-                                )),
-                            Image.asset(
-                              "assets/images/appiconpng.png",
-                              width: 40,
-                              height: 40,
-                            ),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              direction: Axis.horizontal,
-                              children: [
-                                InkWell(
-                                    onTap: () async {
-                                      SharedPreferences sharedPreferences =
-                                          await SharedPreferences.getInstance();
-
-                                      if (sharedPreferences
-                                              .getString(SizValue.isLogged)
-                                              .toString() ==
-                                          "null") {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoginPage(otpNumber: "")));
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.isLogged)
-                                              .toString() ==
-                                          "1") {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    BasicLoginInfo(
-                                                        fromWhere: sharedPreferences
-                                                            .getString(
-                                                                SizValue.source)
-                                                            .toString())));
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.isLogged)
-                                              .toString() ==
-                                          "2") {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AccountCreate()));
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.underReview)
-                                              .toString() ==
-                                          "0") {
-                                        showReviewdialog(
-                                            sharedPreferences
-                                                .getString(SizValue.underReviewMsg)
-                                                .toString(),
-                                            sharedPreferences
-                                                .getString(SizValue.underReview)
-                                                .toString());
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.underReview)
-                                              .toString() ==
-                                          "2") {
-                                        showReviewdialog(
-                                            sharedPreferences
-                                                .getString(
-                                                    SizValue.rejectedReviewMSG)
-                                                .toString(),
-                                            sharedPreferences
-                                                .getString(SizValue.underReview)
-                                                .toString());
-                                      } else if (sharedPreferences
-                                              .getString(SizValue.underReview)
-                                              .toString() ==
-                                          "3") {
-                                        showReviewdialog(
-                                            sharedPreferences
-                                                .getString(
-                                                    SizValue.incompleteMessage)
-                                                .toString(),
-                                            sharedPreferences
-                                                .getString(SizValue.underReview)
-                                                .toString());
-                                      } else {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => Wishlist()));
-                                      }
-                                    },
-                                    child: SvgPicture.asset(
-                                      "assets/images/heart.svg",
-                                      width: 20,
-                                      height: 20,
-                                    )),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                      AnimatedContainer(
-                        alignment: Alignment.topCenter,
-                        curve: Curves.easeInOutCubic,
-                        height: tabafterfirst ? 500 : 48,
-                        margin: const EdgeInsets.only(
-                            left: 15, right: 15, bottom: 20, top: 20),
-                        decoration: BoxDecoration(
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Color.fromARGB(223, 218, 218, 218),
-                                  blurRadius: 2,
-                                  offset: Offset(0, 0))
-                            ],
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.white),
-                        duration: const Duration(milliseconds: 800),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                const SizedBox(width: 15),
-                                SvgPicture.asset("assets/images/search.svg"),
-                                const SizedBox(width: 15),
-
-                                // textformfield search
-
-                                Flexible(
-                                    child: TextFormField(
-                                        textInputAction: TextInputAction.search,
-                                        onChanged: (value) {
-                                          if (value.isEmpty) {
+                                          enableInteractiveSelection: false,
+                                          onTap: () async {
                                             setState(() {
-                                              showarrowsearch = false;
-                                              searchInputValue = value;
+                                              tabafterfirst = true;
+
+                                              if (searchDecordedList.isEmpty) {
+                                                getSearch("");
+                                              }
                                             });
-                                          } else {
-                                            setState(() {
-                                              searchInputValue = value;
-
-                                              showarrowsearch = true;
-                                            });
-                                          }
-
-                                          startTimer() {
-                                            checkTypingTimer = Timer(
-                                                const Duration(milliseconds: 600),
-                                                () async {
-                                              getSearch(value);
-                                            });
-                                          }
-
-                                          checkTypingTimer?.cancel();
-                                          startTimer();
-                                        },
-                                        onTapOutside: (event) {
-                                          setState(() {
-                                            FocusManager.instance.primaryFocus
-                                                ?.unfocus();
-                                          });
-                                        },
-                                        enableInteractiveSelection: false,
-                                        onTap: () async {
-                                          setState(() {
-                                            tabafterfirst = true;
-
-                                            if (searchDecordedList.isEmpty) {
-                                              getSearch("");
-                                            }
-                                          });
-                                        },
-                                        onFieldSubmitted: (value) {
-                                          if (value.isNotEmpty) {
-                                            setState(() {
-                                              tabafterfirst = false;
-                                            });
-
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        SearchList(
-                                                            searchKeyword:
-                                                                searchInputValue)));
-                                          }
-                                        },
-                                        style: GoogleFonts.lexendDeca(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w300,
-                                            fontSize: 14),
-
-                                        // hint style
-                                        decoration: InputDecoration(
-                                          border: InputBorder.none,
-                                          hintText:
-                                              "Search for lenders, brands, colour...",
-                                          hintStyle: GoogleFonts.lexendDeca(
-                                              color: const Color.fromARGB(
-                                                  255, 123, 123, 123),
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 14),
-                                        ))),
-
-                                // close button
-
-                                Visibility(
-                                  visible: tabafterfirst ? true : false,
-                                  child: InkWell(
-                                      onTap: showarrowsearch
-                                          ? () {
+                                          },
+                                          onFieldSubmitted: (value) {
+                                            if (value.isNotEmpty) {
                                               setState(() {
                                                 tabafterfirst = false;
                                               });
@@ -3661,137 +3691,187 @@ class _HomeNavState extends State<HomeNav> {
                                                               searchKeyword:
                                                                   searchInputValue)));
                                             }
-                                          : () {
-                                              setState(() {
-                                                tabafterfirst = false;
-                                              });
-                                            },
-                                      child: Container(
-                                        alignment: Alignment.centerRight,
-                                        padding: showarrowsearch
-                                            ? const EdgeInsets.only(
-                                                top: 8, bottom: 8)
-                                            : const EdgeInsets.only(
-                                                top: 16, bottom: 16),
-                                        height: 45,
-                                        width: 45,
-                                        child: showarrowsearch
-                                            ? Container(
-                                                decoration: const BoxDecoration(
-                                                    color: MyColors.themecolor,
-                                                    shape: BoxShape.circle),
-                                                child: const Icon(
-                                                  Icons
-                                                      .keyboard_arrow_right_rounded,
-                                                  size: 25,
-                                                  color: Colors.white,
-                                                ))
-                                            : SvgPicture.asset(
-                                                "assets/images/close.svg",
-                                                width: 11,
-                                                height: 11,
-                                              ),
-                                      )),
-                                ),
+                                          },
+                                          style: GoogleFonts.lexendDeca(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w300,
+                                              fontSize: 14),
 
-                                const SizedBox(width: 15)
-                              ],
-                            ),
+                                          // hint style
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText:
+                                                "Search for lenders, brands, colour...",
+                                            hintStyle: GoogleFonts.lexendDeca(
+                                                color: const Color.fromARGB(
+                                                    255, 123, 123, 123),
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 14),
+                                          ))),
 
-                            // list search
+                                  // close button
 
-                            Expanded(
-                              child: searchDecordedList.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                        "No suggestion found\nTap on search for better result",
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.lexendDeca(
-                                            fontSize: 12, color: Colors.grey),
-                                      ),
-                                    )
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Container(
-                                        margin: const EdgeInsets.only(top: 10),
-                                        child: ListView.builder(
-                                            physics: const BouncingScrollPhysics(),
-                                            shrinkWrap: true,
-                                            itemCount: searchDecordedList.length,
-                                            itemBuilder: ((context, index) {
-                                              return InkWell(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              SearchList(
+                                  Visibility(
+                                    visible: tabafterfirst ? true : false,
+                                    child: InkWell(
+                                        onTap: showarrowsearch
+                                            ? () {
+                                                setState(() {
+                                                  tabafterfirst = false;
+                                                });
+
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            SearchList(
                                                                 searchKeyword:
-                                                                    searchDecordedList[
-                                                                                index]
-                                                                            ['word']
-                                                                        .toString(),
-                                                              )));
-                                                },
-                                                child: Container(
-                                                  margin: const EdgeInsets.only(
-                                                      right: 20, left: 20),
-                                                  child: Column(
-                                                    children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                              searchDecordedList[
-                                                                      index]['word']
-                                                                  .toString(),
-                                                              maxLines: 1,
-                                                              style: GoogleFonts
-                                                                  .lexendDeca(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w300,
-                                                                      fontSize: 14),
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            margin: const EdgeInsets
-                                                                .only(right: 10),
-                                                            child: SvgPicture.asset(
-                                                                "assets/images/arrowright2.svg"),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Container(
-                                                          margin:
-                                                              const EdgeInsets.only(
-                                                                  top: 10,
-                                                                  bottom: 10),
-                                                          child: const Divider())
-                                                    ],
-                                                  ),
+                                                                    searchInputValue)));
+                                              }
+                                            : () {
+                                                setState(() {
+                                                  tabafterfirst = false;
+                                                });
+                                              },
+                                        child: Container(
+                                          alignment: Alignment.centerRight,
+                                          padding: showarrowsearch
+                                              ? const EdgeInsets.only(
+                                                  top: 8, bottom: 8)
+                                              : const EdgeInsets.only(
+                                                  top: 16, bottom: 16),
+                                          height: 45,
+                                          width: 45,
+                                          child: showarrowsearch
+                                              ? Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: MyColors
+                                                              .themecolor,
+                                                          shape:
+                                                              BoxShape.circle),
+                                                  child: const Icon(
+                                                    Icons
+                                                        .keyboard_arrow_right_rounded,
+                                                    size: 25,
+                                                    color: Colors.white,
+                                                  ))
+                                              : SvgPicture.asset(
+                                                  "assets/images/close.svg",
+                                                  width: 11,
+                                                  height: 11,
                                                 ),
-                                              );
-                                            })),
-                                      )),
-                            )
-                          ],
+                                        )),
+                                  ),
+
+                                  const SizedBox(width: 15)
+                                ],
+                              ),
+
+                              // list search
+
+                              Expanded(
+                                child: searchDecordedList.isEmpty
+                                    ? Center(
+                                        child: Text(
+                                          "No suggestion found\nTap on search for better result",
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.lexendDeca(
+                                              fontSize: 12, color: Colors.grey),
+                                        ),
+                                      )
+                                    : ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(top: 10),
+                                          child: ListView.builder(
+                                              physics:
+                                                  const BouncingScrollPhysics(),
+                                              shrinkWrap: true,
+                                              itemCount:
+                                                  searchDecordedList.length,
+                                              itemBuilder: ((context, index) {
+                                                return InkWell(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    SearchList(
+                                                                      searchKeyword:
+                                                                          searchDecordedList[index]['word']
+                                                                              .toString(),
+                                                                    )));
+                                                  },
+                                                  child: Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 20,
+                                                            left: 20),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Expanded(
+                                                              child: Text(
+                                                                searchDecordedList[
+                                                                            index]
+                                                                        ['word']
+                                                                    .toString(),
+                                                                maxLines: 1,
+                                                                style: GoogleFonts.lexendDeca(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300,
+                                                                    fontSize:
+                                                                        14),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      right:
+                                                                          10),
+                                                              child: SvgPicture
+                                                                  .asset(
+                                                                      "assets/images/arrowright2.svg"),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Container(
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    top: 10,
+                                                                    bottom: 10),
+                                                            child:
+                                                                const Divider())
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              })),
+                                        )),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      }
-    );
+          );
+        });
   }
 
   showDialogRental() {
@@ -4253,23 +4333,22 @@ class _HomeNavState extends State<HomeNav> {
           onWillPop: () async {
             return value == "3" ? true : false;
           },
-          child: Center(
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(left: 30, right: 20),
-              height: 180,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(13)),
-              child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: Column(
+          child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                     margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                    color: Colors.white, borderRadius: BorderRadius.circular(13)),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         alignment: Alignment.center,
-                        width: 280,
+                        width: MediaQuery.of(context).size.width,
                         child: Text(
                           title,
                           maxLines: 4,
@@ -4286,11 +4365,11 @@ class _HomeNavState extends State<HomeNav> {
                             ? () async {
                                 Navigator.pop(context);
                                 controller.updateIndex(0);
-
+                
                                 SharedPreferences sharedPreferences =
                                     await SharedPreferences.getInstance();
                                 sharedPreferences.clear();
-
+                
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
@@ -4300,7 +4379,7 @@ class _HomeNavState extends State<HomeNav> {
                             : value == "3"
                                 ? () {
                                     Navigator.pop(context);
-
+                
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -4332,9 +4411,9 @@ class _HomeNavState extends State<HomeNav> {
                         ),
                       ),
                     ],
-                  )),
-            ),
-          ),
+                  ),
+                ),
+              )),
         );
       },
     );

@@ -2,6 +2,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
@@ -112,6 +113,14 @@ class _ProfileViewState extends State<ProfileView>
     }
   }
 
+
+  
+   decordedResponse(String response) {
+    Codec<String, String> stringToBase64 = utf8.fuse(base64);
+    return stringToBase64.decode(response);
+  }
+
+
   // remove wishlist ==============================================================================================
 
   Map<String, dynamic> wishlistremoveReponse = {};
@@ -187,11 +196,13 @@ class _ProfileViewState extends State<ProfileView>
       followResponse = jsonDecode(response.body);
 
       if (followResponse["success"] == true) {
+
         setState(() {
          controller. lenderReponse["follower"] =
               (int.parse(controller. lenderReponse["follower"].toString()) + 1).toString();
          controller. follow = true;
         });
+
       } else if (followResponse["success"] == false) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(followResponse["error"].toString(),
@@ -563,10 +574,24 @@ class _ProfileViewState extends State<ProfileView>
 
   late TabController tabController;
 
+
+    firebaseEventCalled()
+  {
+    
+     try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "ProfileViewAndroid",
+      );
+    } catch (e) {}
+  }
+
   
 
   @override
   void initState() {
+    firebaseEventCalled();
    controller. getlenderProfile(context,widget.lenderId,  pagenoC);
     tabController = TabController(length: 2, vsync: this, initialIndex: 0);
 
@@ -716,23 +741,26 @@ class _ProfileViewState extends State<ProfileView>
                                 Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
 
                              }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
+                            //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                            //  {
 
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
+                            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
 
-                            }else if (sharedPreferences
-                                        .getString(SizValue.underReview)
-                                        .toString() ==
-                                    "0") {
-                                  showReviewdialog(
-                                      sharedPreferences
-                                          .getString(SizValue.underReviewMsg)
-                                          .toString(),
-                                      sharedPreferences
-                                          .getString(SizValue.underReview)
-                                          .toString());
-                                } else if (sharedPreferences
+                            // }
+                            // else if (sharedPreferences
+                            //             .getString(SizValue.underReview)
+                            //             .toString() ==
+                            //         "0") {
+                            //       showReviewdialog(
+                            //           sharedPreferences
+                            //               .getString(SizValue.underReviewMsg)
+                            //               .toString(),
+                            //           sharedPreferences
+                            //               .getString(SizValue.underReview)
+                            //               .toString());
+                            //     }
+                                
+                                 else if (sharedPreferences
                                         .getString(SizValue.underReview)
                                         .toString() ==
                                     "2") {
@@ -786,7 +814,18 @@ class _ProfileViewState extends State<ProfileView>
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => AccountCreate()));
-                                } else if (sharedPreferences
+                                } 
+                                
+                                
+                                
+                                  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                             {
+
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
+
+                            }
+                                
+                                else if (sharedPreferences
                                         .getString(SizValue.underReview)
                                         .toString() ==
                                     "0") {
@@ -980,24 +1019,28 @@ class _ProfileViewState extends State<ProfileView>
                                 Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
 
                              }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
+                            //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                            //  {
 
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
+                            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
 
-                            }else if (sharedPreferences
-                                                  .getString(SizValue.underReview)
-                                                  .toString() ==
-                                              "0") {
-                                            showReviewdialog(
-                                                sharedPreferences
-                                                    .getString(
-                                                        SizValue.underReviewMsg)
-                                                    .toString(),
-                                                sharedPreferences
-                                                    .getString(SizValue.underReview)
-                                                    .toString());
-                                          } else if (sharedPreferences
+                            // }
+                            
+                            // else if (sharedPreferences
+                            //                       .getString(SizValue.underReview)
+                            //                       .toString() ==
+                            //                   "0") {
+                            //                 showReviewdialog(
+                            //                     sharedPreferences
+                            //                         .getString(
+                            //                             SizValue.underReviewMsg)
+                            //                         .toString(),
+                            //                     sharedPreferences
+                            //                         .getString(SizValue.underReview)
+                            //                         .toString());
+                            //               } 
+                                          
+                                          else if (sharedPreferences
                                                   .getString(SizValue.underReview)
                                                   .toString() ==
                                               "2") {
@@ -1061,24 +1104,29 @@ class _ProfileViewState extends State<ProfileView>
                                 Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
 
                              }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
 
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
+                            //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                            //  {
 
-                            }else if (sharedPreferences
-                                                  .getString(SizValue.underReview)
-                                                  .toString() ==
-                                              "0") {
-                                            showReviewdialog(
-                                                sharedPreferences
-                                                    .getString(
-                                                        SizValue.underReviewMsg)
-                                                    .toString(),
-                                                sharedPreferences
-                                                    .getString(SizValue.underReview)
-                                                    .toString());
-                                          } else if (sharedPreferences
+                            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
+
+                            // }
+                            
+                            // else if (sharedPreferences
+                            //                       .getString(SizValue.underReview)
+                            //                       .toString() ==
+                            //                   "0") {
+                            //                 showReviewdialog(
+                            //                     sharedPreferences
+                            //                         .getString(
+                            //                             SizValue.underReviewMsg)
+                            //                         .toString(),
+                            //                     sharedPreferences
+                            //                         .getString(SizValue.underReview)
+                            //                         .toString());
+                            //               } 
+                                          
+                                          else if (sharedPreferences
                                                   .getString(SizValue.underReview)
                                                   .toString() ==
                                               "2") {
@@ -1249,24 +1297,28 @@ class _ProfileViewState extends State<ProfileView>
                                 Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
 
                              }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
+                            //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                            //  {
 
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
+                            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
 
-                            }else if (sharedPreferences
-                                                  .getString(SizValue.underReview)
-                                                  .toString() ==
-                                              "0") {
-                                            showReviewdialog(
-                                                sharedPreferences
-                                                    .getString(
-                                                        SizValue.underReviewMsg)
-                                                    .toString(),
-                                                sharedPreferences
-                                                    .getString(SizValue.underReview)
-                                                    .toString());
-                                          } else if (sharedPreferences
+                            // }
+                            
+                            // else if (sharedPreferences
+                            //                       .getString(SizValue.underReview)
+                            //                       .toString() ==
+                            //                   "0") {
+                            //                 showReviewdialog(
+                            //                     sharedPreferences
+                            //                         .getString(
+                            //                             SizValue.underReviewMsg)
+                            //                         .toString(),
+                            //                     sharedPreferences
+                            //                         .getString(SizValue.underReview)
+                            //                         .toString());
+                            //               } 
+                                          
+                                          else if (sharedPreferences
                                                   .getString(SizValue.underReview)
                                                   .toString() ==
                                               "2") {
@@ -1337,24 +1389,28 @@ class _ProfileViewState extends State<ProfileView>
                                 Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
 
                              }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
+                            //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                            //  {
 
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
+                            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
 
-                            } else if (sharedPreferences
-                                                  .getString(SizValue.underReview)
-                                                  .toString() ==
-                                              "0") {
-                                            showReviewdialog(
-                                                sharedPreferences
-                                                    .getString(
-                                                        SizValue.underReviewMsg)
-                                                    .toString(),
-                                                sharedPreferences
-                                                    .getString(SizValue.underReview)
-                                                    .toString());
-                                          } else if (sharedPreferences
+                            // }
+                            
+                            //  else if (sharedPreferences
+                            //                       .getString(SizValue.underReview)
+                            //                       .toString() ==
+                            //                   "0") {
+                            //                 showReviewdialog(
+                            //                     sharedPreferences
+                            //                         .getString(
+                            //                             SizValue.underReviewMsg)
+                            //                         .toString(),
+                            //                     sharedPreferences
+                            //                         .getString(SizValue.underReview)
+                            //                         .toString());
+                            //               } 
+                                          
+                                          else if (sharedPreferences
                                                   .getString(SizValue.underReview)
                                                   .toString() ==
                                               "2") {
@@ -1448,7 +1504,6 @@ class _ProfileViewState extends State<ProfileView>
                           setState(() {
                             pagenoC = 1;
                           });
-        
                          controller. getlenderProfile( context,widget.lenderId, 1);
                         }
                       },
@@ -1553,26 +1608,31 @@ class _ProfileViewState extends State<ProfileView>
                                 Navigator.push(context, MaterialPageRoute(builder: (context)=>BasicLoginInfo(fromWhere: sharedPreferences.getString(SizValue.source).toString())));
 
                              }
-                             else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
-                             {
+                            //  else if(sharedPreferences.getString(SizValue.isLogged).toString()=="2")
+                            //  {
 
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
+                            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountCreate()));
 
-                            } else if (sharedPreferences
-                                                            .getString(
-                                                                SizValue.underReview)
-                                                            .toString() ==
-                                                        "0") {
-                                                      showReviewdialog(
-                                                          sharedPreferences
-                                                              .getString(SizValue
-                                                                  .underReviewMsg)
-                                                              .toString(),
-                                                          sharedPreferences
-                                                              .getString(SizValue
-                                                                  .underReview)
-                                                              .toString());
-                                                    } else if (sharedPreferences
+                            // }
+                            
+                            //  else if (sharedPreferences
+                            //                                 .getString(
+                            //                                     SizValue.underReview)
+                            //                                 .toString() ==
+                            //                             "0") {
+                            //                           showReviewdialog(
+                            //                               sharedPreferences
+                            //                                   .getString(SizValue
+                            //                                       .underReviewMsg)
+                            //                                   .toString(),
+                            //                               sharedPreferences
+                            //                                   .getString(SizValue
+                            //                                       .underReview)
+                            //                                   .toString());
+                            //                         } 
+                                                    
+                                                    
+                                                    else if (sharedPreferences
                                                             .getString(
                                                                 SizValue.underReview)
                                                             .toString() ==
@@ -1966,9 +2026,12 @@ class _ProfileViewState extends State<ProfileView>
                                                           bottom: 10,
                                                           left: 20),
                                                       child: Text(
-                                                        lenderdecordedListReview[
-                                                                index]["comment"]
-                                                            .toString(),
+
+                                                 decordedResponse( lenderdecordedListReview[
+                                                                index]["comment_enc"]
+                                                            .toString(),),
+
+                                                       
                                                         style: GoogleFonts.lexendDeca(
                                                             fontWeight:
                                                                 FontWeight.w300,
@@ -2065,6 +2128,11 @@ class _ProfileViewState extends State<ProfileView>
                                                     // horizontal list
         
                                                     SizedBox(
+
+
+
+
+
                                                       width: MediaQuery.of(context)
                                                           .size
                                                           .width,
@@ -2152,9 +2220,9 @@ class _ProfileViewState extends State<ProfileView>
                                                           .size
                                                           .width,
                                                       child: Text(
-                                                        lenderdecordedListReview[
-                                                                index]["comment"]
-                                                            .toString(),
+                                                         decordedResponse( lenderdecordedListReview[
+                                                                index]["comment_enc"]
+                                                            .toString()),
                                                         style: GoogleFonts.lexendDeca(
                                                             fontWeight:
                                                                 FontWeight.w300,
@@ -2204,23 +2272,23 @@ class _ProfileViewState extends State<ProfileView>
           onWillPop: () async {
             return value == "3" ? true : false;
           },
-          child: Center(
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(left: 30, right: 20),
-              height: 180,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
+          child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                   margin: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(13)),
-              child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: Column(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
+                
                       Container(
                         alignment: Alignment.center,
-                        width: 280,
+                        width: MediaQuery.of(context).size.width,
                         child: Text(
                           title,
                           maxLines: 4,
@@ -2239,11 +2307,11 @@ class _ProfileViewState extends State<ProfileView>
                                 final BottomNavController controller =
                                     Get.put(BottomNavController());
                                 controller.updateIndex(0);
-
+                
                                 SharedPreferences sharedPreferences =
                                     await SharedPreferences.getInstance();
                                 sharedPreferences.clear();
-
+                
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
@@ -2253,7 +2321,7 @@ class _ProfileViewState extends State<ProfileView>
                             : value == "3"
                                 ? () {
                                     Navigator.pop(context);
-
+                
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -2285,9 +2353,9 @@ class _ProfileViewState extends State<ProfileView>
                         ),
                       ),
                     ],
-                  )),
-            ),
-          ),
+                  ),
+                ),
+              )),
         );
       },
     );

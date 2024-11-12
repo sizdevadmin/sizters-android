@@ -112,6 +112,7 @@ class SizValue{
    static const stripeIntent="$baseUrl/stripe/payment_intents";
    static const logoutAccount="$baseUrl/account/logout";
    static const homeLenders="$baseUrl/home/lenders";
+   static const update_push_status="$baseUrl/home/update_push_status";
 
 
 

@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -34,17 +35,31 @@ class _CartState extends State<Cart> {
   @override
   void initState() {
 
-    print("herjkhoreihjio");
+   
     controller = Get.put(CartPromoController());
     controller.appliedPromoCode = "";
     controller.forseUpdate();
     controller.getCart(context);
+    firebaseEventCalled();
     super.initState();
   }
 
   String inputCoupon = "";
 
   bool renterTermsCheck=false;
+
+
+  firebaseEventCalled()
+  {
+    
+     try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "CartAndroid",
+      );
+    } catch (e) {}
+  }
 
   @override
   Widget build(BuildContext context) {

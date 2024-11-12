@@ -80,25 +80,28 @@ class _ManageBasicAddressState extends State<ManageBasicAddress> {
                          "Address".toUpperCase(),
                                  style: SizValue.toolbarStyle,
                        )),
-                   Wrap(
-                     alignment: WrapAlignment.center,
-                     crossAxisAlignment: WrapCrossAlignment.center,
-                     direction: Axis.horizontal,
-                     children: [
-                       InkWell(
+
+
+                        const SizedBox(width: 30)
+                  //  Wrap(
+                  //    alignment: WrapAlignment.center,
+                  //    crossAxisAlignment: WrapCrossAlignment.center,
+                  //    direction: Axis.horizontal,
+                  //    children: [
+                  //      InkWell(
                          
-                          onTap: () {
-                           Navigator.push(context, MaterialPageRoute(builder: (context)=> Wishlist()));
-                         },
-                         child: SvgPicture.asset("assets/images/heart.svg",width: 20,height: 20,)),
-                       const SizedBox(width: 20),
-                       InkWell(
-                         onTap: () {
-                           Navigator.push(context,MaterialPageRoute(builder: (context)=>const Cart()));
-                         },
-                         child: SvgPicture.asset("assets/images/bag.svg",width: 20,height: 20,)),
-                     ],
-                   )
+                  //         onTap: () {
+                  //          Navigator.push(context, MaterialPageRoute(builder: (context)=> Wishlist()));
+                  //        },
+                  //        child: SvgPicture.asset("assets/images/heart.svg",width: 20,height: 20,)),
+                  //      const SizedBox(width: 20),
+                  //      InkWell(
+                  //        onTap: () {
+                  //          Navigator.push(context,MaterialPageRoute(builder: (context)=>const Cart()));
+                  //        },
+                  //        child: SvgPicture.asset("assets/images/bag.svg",width: 20,height: 20,)),
+                  //    ],
+                  //  )
                  ],
                ),
              ),

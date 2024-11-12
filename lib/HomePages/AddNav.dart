@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -31,6 +32,17 @@ class _AddNavState extends State<AddNav> {
     
 
 
+     firebaseEventCalled()
+  {
+    
+     try {
+      FacebookAppEvents facebookAppEvents = FacebookAppEvents();
+
+      facebookAppEvents.logEvent(
+        name: "AddClosetAndroid",
+      );
+    } catch (e) {}
+  }
 
   
   
@@ -38,6 +50,8 @@ class _AddNavState extends State<AddNav> {
   @override
   initState()
   {
+
+    firebaseEventCalled();
      controller.getProfleValue();
     super.initState();
   }
