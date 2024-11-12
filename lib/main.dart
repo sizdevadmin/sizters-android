@@ -32,7 +32,7 @@ class _MyAppLoginState extends State<MyAppLogin> {
   StreamSubscription<Uri>? _linkSubscription;
 
   @override
-  void initState() {
+   void initState() {
     super.initState();
     initDeepLinks();
   }
