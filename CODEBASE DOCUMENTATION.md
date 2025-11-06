@@ -212,10 +212,6 @@ For the full list, see `pubspec.yaml` dependencies.
 - `lib/Controllers/ChatController.dart`: Chat, realtime updates (Pusher), tracking
 
 ## B. Simple Flow Diagram
-```mermaid
-description
-```
-
 - Launch -> `main()` -> Firebase.init -> `MyAppLogin` -> Deep-link check -> `Splash` -> `Home`
 - API calls -> `http.post` to endpoints in `SizValue`
 - FCM message -> `FirebaseApi` -> local notification -> optional navigation to pages
